@@ -1,0 +1,60 @@
+{% extends "public/base.html" %}
+{% load static %}
+{% block title %}বিজয়ী ঘোষণা{% endblock %}
+{% block content %}
+<section class="bg-pine-900 text-white">
+  <div class="mx-auto max-w-6xl px-4 py-12 md:py-16">
+    <div class="flex flex-col items-start gap-6 md:flex-row md:items-center md:justify-between">
+      <div class="max-w-3xl">
+        <p class="text-base font-semibold text-gold-100">আনন্দের সাথে ঘোষণা করা হচ্ছে</p>
+        <h1 class="mt-3 text-[1.7rem] font-bold leading-tight sm:text-[2rem] lg:text-[2.625rem]">
+          {% if announcement and announcement.title_bn %}
+            {{ announcement.title_bn }}
+          {% else %}
+            {{ page_branding.name_bn|default:branding.name_bn|default:"স্কলারশিপ" }}
+          {% endif %}
+        </h1>
+        <p class="mt-3 text-xl text-pine-50">বিজয়ীদের তালিকা</p>
+        {% if announcement and announcement.description_bn %}
+          <p class="mt-4 text-[17px] leading-8 text-pine-50">{{ announcement.description_bn|linebreaksbr }}</p>
+        {% elif page_branding and page_branding.sponsor_name_bn %}
+          <p class="mt-4 text-[17px] leading-8 text-pine-50">স্পনসর: {{ page_branding.sponsor_name_bn }}</p>
+        {% elif branding and branding.sponsor_name_bn %}
+          <p class="mt-4 text-[17px] leading-8 text-pine-50">স্পনসর: {{ branding.sponsor_name_bn }}</p>
+        {% endif %}
+      </div>
+      <div class="flex items-center gap-4 rounded-3xl bg-white/10 px-5 py-4" aria-hidden="true">
+        <svg xmlns="http://www.w3.org/2000/svg" width="72" height="72" viewBox="0 0 72 72" fill="none">
+          <path d="M36 8l6.5 13.2 14.6 2.1-10.6 10.3 2.5 14.5L36 41.2 23 48.1l2.5-14.5L14.9 23.3l14.6-2.1L36 8z" fill="#C6A15B"/>
+          <path d="M22 46h28v4H22zM26 50h20l-2 10H28l-2-10z" fill="#F4E7C3"/>
+          <path d="M30 60h12v4H30z" fill="#C6A15B"/>
+        </svg>
+        {% if not historical and branding and branding.sponsor_logo %}
+          <img src="{% url 'public:brand_asset' 'sponsor-logo' %}" alt="{{ branding.sponsor_name_bn }}" width="72" height="72" class="h-16 w-16 rounded-xl bg-white object-contain p-1">
+        {% endif %}
+      </div>
+    </div>
+    {% if announcement and announcement_token %}
+      <a class="btn-secondary mt-8 bg-white" href="{% url 'public:announcement_dismiss' %}" data-announcement-dismiss data-token="{{ announcement_token }}">মূল ওয়েবসাইটে প্রবেশ করুন</a>
+    {% else %}
+      <a class="btn-secondary mt-8 bg-white" href="{% url 'public:home' %}?home=1">মূল ওয়েবসাইটে প্রবেশ করুন</a>
+    {% endif %}
+  </div>
+</section>
+<section class="mx-auto max-w-6xl px-4 py-10">
+  {% if not announcement %}
+    <p class="card text-[17px] leading-8">এই মুহূর্তে কোনো সক্রিয় বিজয়ী ঘোষণা নেই।</p>
+  {% else %}
+    <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      {% for winner in winners %}
+        {% include "public/includes/winner_card.html" %}
+      {% empty %}
+        <p class="text-[17px] text-slate-700">প্রকাশিত বিজয়ী এখনো নেই।</p>
+      {% endfor %}
+    </div>
+  {% endif %}
+</section>
+{% endblock %}
+{% block scripts %}
+<script src="{% static 'js/announcement.js' %}"></script>
+{% endblock %}

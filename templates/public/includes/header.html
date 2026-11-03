@@ -1,32 +1,52 @@
 {% load static %}
-<header class="border-b border-pine-100 bg-white">
-  <div class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4">
-    <a href="{% url 'public:home' %}" class="flex items-center gap-3">
+<header class="border-b border-pine-100 bg-white" x-data="{ menu: false }" @keydown.escape.window="menu = false">
+  <div class="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3">
+    <a href="{% url 'public:home' %}?home=1" class="flex min-w-0 items-center gap-3">
       {% if branding and branding.logo %}
-        <img src="{% url 'public:brand_asset' 'logo' %}" alt="" class="h-14 w-14 object-contain">
+        <img src="{% url 'public:brand_asset' 'logo' %}" alt="" width="56" height="56" class="h-12 w-12 shrink-0 object-contain sm:h-14 sm:w-14">
       {% else %}
-        <img src="{% static 'images/logo-fallback.png' %}" alt="" class="h-14 w-14 object-contain">
+        <img src="{% static 'images/logo-fallback.png' %}" alt="" width="56" height="56" class="h-12 w-12 shrink-0 object-contain sm:h-14 sm:w-14">
       {% endif %}
-      <span>
-        <span class="block text-lg font-semibold text-pine-900">{{ branding.name_bn|default:"স্কলারশিপ" }}</span>
-        {% if branding and branding.slogan_bn %}<span class="block text-sm text-slate-600">{{ branding.slogan_bn }}</span>{% endif %}
+      <span class="min-w-0">
+        <span class="block truncate text-base font-bold leading-snug text-pine-900 sm:text-lg">{{ branding.name_bn|default:"স্কলারশিপ" }}</span>
+        {% if branding and branding.sponsor_name_bn %}<span class="block truncate text-[15px] text-slate-700">{{ branding.sponsor_name_bn }}</span>{% endif %}
       </span>
     </a>
-    {% if branding and branding.sponsor_logo %}
-      <img src="{% url 'public:brand_asset' 'sponsor-logo' %}" alt="{{ branding.sponsor_name_bn }}" class="h-12 w-auto max-w-[8rem] object-contain">
-    {% elif branding and branding.sponsor_name_bn %}
-      <span class="text-sm font-medium text-pine-800">{{ branding.sponsor_name_bn }}</span>
-    {% endif %}
+    <div class="flex items-center gap-2">
+      {% if branding and branding.sponsor_logo %}
+        <img src="{% url 'public:brand_asset' 'sponsor-logo' %}" alt="{{ branding.sponsor_name_bn }}" width="96" height="48" class="hidden h-12 w-auto max-w-[6.5rem] object-contain sm:block">
+      {% endif %}
+      <button type="button" class="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg border border-pine-100 text-pine-900 md:hidden" @click="menu = !menu" :aria-expanded="menu ? 'true' : 'false'" aria-controls="public-nav">
+        <span class="sr-only">মেনু</span>
+        <svg x-show="!menu" xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-width="2" d="M4 7h16M4 12h16M4 17h16"/></svg>
+        <svg x-cloak x-show="menu" xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-width="2" d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
   </div>
-  <nav class="bg-pine-900 text-white" aria-label="প্রধান মেনু">
-    <div class="mx-auto flex max-w-6xl flex-wrap gap-1 px-4 py-2 text-sm">
-      <a class="rounded px-3 py-2 hover:bg-white/10" href="{% url 'public:home' %}">প্রচ্ছদ</a>
-      <a class="rounded px-3 py-2 hover:bg-white/10" href="{% url 'public:about' %}">পরিচিতি</a>
-      <a class="rounded px-3 py-2 hover:bg-white/10" href="{% url 'public:process' %}">আবেদন প্রক্রিয়া</a>
-      <a class="rounded px-3 py-2 hover:bg-white/10" href="{% url 'public:schedule' %}">সময়সূচি</a>
-      <a class="rounded px-3 py-2 hover:bg-white/10" href="{% url 'public:notices' %}">নোটিশ</a>
-      <a class="rounded px-3 py-2 hover:bg-white/10" href="{% url 'public:winners' %}">বিজয়ী</a>
-      <a class="rounded px-3 py-2 hover:bg-white/10" href="{% url 'public:contact' %}">যোগাযোগ</a>
+  <nav id="public-nav" class="public-menu bg-pine-900 text-white" aria-label="প্রধান মেনু" :class="menu ? 'is-open' : ''">
+    <div class="mx-auto flex max-w-6xl flex-col px-3 py-2 md:flex-row md:flex-wrap md:items-center md:gap-1">
+      <a class="public-nav-link" href="{% url 'public:home' %}?home=1">প্রচ্ছদ</a>
+      <a class="public-nav-link" href="{% url 'public:about' %}">পরিচিতি</a>
+      <a class="public-nav-link" href="{% url 'public:process' %}">আবেদন প্রক্রিয়া</a>
+      <a class="public-nav-link" href="{% url 'public:schedule' %}">সময়সূচি</a>
+      <a class="public-nav-link" href="{% url 'public:notices' %}">নোটিশ</a>
+      <a class="public-nav-link" href="{% url 'public:announcement' %}">ঘোষণা</a>
+      <a class="public-nav-link" href="{% url 'public:winners' %}">বিজয়ী</a>
+      <a class="public-nav-link" href="{% url 'public:contact' %}">যোগাযোগ</a>
     </div>
   </nav>
+  <noscript>
+    <nav class="bg-pine-900 text-white md:hidden" aria-label="প্রধান মেনু">
+      <div class="mx-auto flex max-w-6xl flex-col px-3 py-2">
+        <a class="public-nav-link" href="{% url 'public:home' %}?home=1">প্রচ্ছদ</a>
+        <a class="public-nav-link" href="{% url 'public:about' %}">পরিচিতি</a>
+        <a class="public-nav-link" href="{% url 'public:process' %}">আবেদন প্রক্রিয়া</a>
+        <a class="public-nav-link" href="{% url 'public:schedule' %}">সময়সূচি</a>
+        <a class="public-nav-link" href="{% url 'public:notices' %}">নোটিশ</a>
+        <a class="public-nav-link" href="{% url 'public:announcement' %}">ঘোষণা</a>
+        <a class="public-nav-link" href="{% url 'public:winners' %}">বিজয়ী</a>
+        <a class="public-nav-link" href="{% url 'public:contact' %}">যোগাযোগ</a>
+      </div>
+    </nav>
+  </noscript>
 </header>

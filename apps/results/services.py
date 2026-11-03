@@ -5,7 +5,8 @@ from django.db import transaction
 from django.utils import timezone
 
 from apps.audit.services import log_action
-from apps.results.models import ExamResult, Winner
+from apps.results.models import ExamResult, Winner, WinnerAnnouncement
+from apps.sessions.models import ScholarshipSession
 
 
 def save_result(*, student, examination, obtained_marks, remarks, position, status, actor, request=None):
@@ -96,4 +97,90 @@ def set_winner_publication(*, winner, publish, actor, request=None):
             instance=winner,
             changes={"is_published": winner.is_published},
         )
+        if publish:
+            feature_session_announcement(
+                session=winner.scholarship_session,
+                actor=actor,
+                request=request,
+            )
         return winner
+
+
+def feature_session_announcement(*, session, actor, request=None, bump=False):
+    """Publish and feature the session announcement without removing winners."""
+    now = timezone.now()
+    with transaction.atomic():
+        ScholarshipSession.objects.select_for_update().get(pk=session.pk)
+        announcement = (
+            WinnerAnnouncement.objects.select_for_update()
+            .filter(scholarship_session=session)
+            .first()
+        )
+        if announcement is None:
+            announcement = WinnerAnnouncement(
+                scholarship_session=session,
+                is_published=True,
+                is_featured=True,
+                published_at=now,
+                publication_version=1,
+                archived_at=None,
+                created_by=actor,
+            )
+            announcement.save()
+            created = True
+        else:
+            was_live = (
+                announcement.is_published
+                and announcement.is_featured
+                and announcement.archived_at is None
+            )
+            created = False
+            if bump or not was_live:
+                announcement.publication_version = announcement.publication_version + 1
+            announcement.is_published = True
+            announcement.is_featured = True
+            announcement.archived_at = None
+            announcement.published_at = now
+            announcement.save(
+                update_fields=[
+                    "is_published",
+                    "is_featured",
+                    "archived_at",
+                    "published_at",
+                    "publication_version",
+                    "updated_at",
+                ]
+            )
+        log_action(
+            request=request,
+            action="announcement.feature",
+            instance=announcement,
+            changes={"created": created, "publication_version": announcement.publication_version},
+        )
+        return announcement
+
+
+def archive_announcement(*, announcement, actor, request=None):
+    announcement.is_featured = False
+    announcement.archived_at = timezone.now()
+    announcement.save(update_fields=["is_featured", "archived_at", "updated_at"])
+    log_action(
+        request=request,
+        action="announcement.archive",
+        instance=announcement,
+        changes={"archived": True, "actor": getattr(actor, "pk", None)},
+    )
+    return announcement
+
+
+def unpublish_announcement(*, announcement, actor, request=None):
+    announcement.is_published = False
+    announcement.is_featured = False
+    announcement.save(update_fields=["is_published", "is_featured", "updated_at"])
+    log_action(
+        request=request,
+        action="announcement.unpublish",
+        instance=announcement,
+        changes={"is_published": False, "actor": getattr(actor, "pk", None)},
+    )
+    return announcement

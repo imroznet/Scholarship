@@ -12,8 +12,16 @@ from apps.audit.services import log_action
 from apps.core.models import WebsiteSetting
 from apps.examinations.models import Examination
 from apps.results.forms import AwardTypeForm, WinnerForm
-from apps.results.models import AwardType, ExamResult, Winner
-from apps.results.services import create_winner, save_result, set_winner_publication
+from apps.results.models import AwardType, ExamResult, Winner, WinnerAnnouncement
+from apps.results.services import (
+    archive_announcement,
+    create_winner,
+    feature_session_announcement,
+    save_result,
+    set_winner_publication,
+    unpublish_announcement,
+)
+from apps.sessions.selectors import get_active_session
 from apps.students.models import Student
 
 
@@ -99,6 +107,10 @@ class WinnerListView(SuperAdminRequiredMixin, View):
         winners = Winner.objects.select_related(
             "student", "student__institute", "student__academic_class", "award_type", "scholarship_session", "certificate"
         )
+        session = get_active_session()
+        announcement = None
+        if session is not None:
+            announcement = WinnerAnnouncement.objects.filter(scholarship_session=session).first()
         return render(
             request,
             "results/winners.html",
@@ -107,6 +119,7 @@ class WinnerListView(SuperAdminRequiredMixin, View):
                 "form": WinnerForm(),
                 "award_form": AwardTypeForm(),
                 "awards": AwardType.objects.all(),
+                "announcement": announcement,
                 "page_title": "বিজয়ী ব্যবস্থাপনা",
             },
         )
@@ -143,6 +156,31 @@ class WinnerListView(SuperAdminRequiredMixin, View):
                 messages.success(request, "বিজয়ী নির্বাচন সংরক্ষণ হয়েছে। এখনো প্রকাশিত হয়নি।")
         else:
             messages.error(request, "বিজয়ীর তথ্য সঠিক নয়।")
+        return redirect("winners:list")
+
+
+class WinnerAnnouncementManageView(SuperAdminRequiredMixin, View):
+    def post(self, request):
+        session = get_active_session()
+        if session is None:
+            messages.error(request, "কোনো সক্রিয় স্কলারশিপ সেশন নেই।")
+            return redirect("winners:list")
+        action = request.POST.get("action")
+        announcement = WinnerAnnouncement.objects.filter(scholarship_session=session).first()
+        try:
+            if action == "feature":
+                feature_session_announcement(session=session, actor=request.user, request=request, bump=True)
+                messages.success(request, "বিজয়ী ঘোষণা প্রকাশিত ও ফিচার করা হয়েছে।")
+            elif action == "archive" and announcement is not None:
+                archive_announcement(announcement=announcement, actor=request.user, request=request)
+                messages.success(request, "ঘোষণা আর্কাইভ করা হয়েছে। পুরনো বিজয়ী তালিকা মুছে ফেলা হয়নি।")
+            elif action == "unpublish" and announcement is not None:
+                unpublish_announcement(announcement=announcement, actor=request.user, request=request)
+                messages.success(request, "ঘোষণা অপ্রকাশিত করা হয়েছে।")
+            else:
+                messages.error(request, "ঘোষণা হালনাগাদ করা যায়নি।")
+        except ValidationError as exc:
+            messages.error(request, " ".join(getattr(exc, "messages", []) or [str(exc)]))
         return redirect("winners:list")
 
 

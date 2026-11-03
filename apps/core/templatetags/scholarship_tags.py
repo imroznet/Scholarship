@@ -1,6 +1,8 @@
 from django import template
 from django.utils import timezone
 
+from apps.schedules.countdown import split_remaining
+
 register = template.Library()
 
 BANGLA_DIGITS = str.maketrans("0123456789", "০১২৩৪৫৬৭৮৯")
@@ -23,6 +25,15 @@ MONTHS = [
 @register.filter
 def bangla_digits(value):
     return "" if value is None else str(value).translate(BANGLA_DIGITS)
+
+
+@register.filter
+def bangla_pad(value, width=2):
+    try:
+        text = str(int(value)).zfill(int(width))
+    except (TypeError, ValueError):
+        return ""
+    return text.translate(BANGLA_DIGITS)
 
 
 @register.filter
@@ -50,6 +61,13 @@ def bangla_date(value):
     if hasattr(value, "hour"):
         text += f", {value.hour:02d}:{value.minute:02d}"
     return text.translate(BANGLA_DIGITS)
+
+
+@register.simple_tag
+def countdown_state(schedule):
+    if schedule is None or not schedule.show_countdown or not schedule.countdown_target:
+        return None
+    return split_remaining(schedule.countdown_target, timezone.now())
 
 
 @register.simple_tag(takes_context=True)

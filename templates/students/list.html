@@ -5,26 +5,26 @@
   <h1 class="text-2xl font-bold text-pine-900">শিক্ষার্থী ব্যবস্থাপনা</h1>
   <a class="btn-primary" href="{% url 'students:create' %}">শিক্ষার্থী যোগ</a>
 </div>
-<form class="card mt-4 grid gap-3 md:grid-cols-3" method="get"
+<form class="card mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3" method="get"
       hx-get="{% url 'students:list' %}" hx-trigger="change, keyup delay:400ms from:input[name='q']" hx-target="#student-table" hx-push-url="true">
-  <input class="w-full rounded-md border border-slate-300 px-3 py-2 text-sm" type="search" name="q" value="{{ filters.q }}" placeholder="আইডি, নাম বা মোবাইল">
-  <select class="rounded-md border border-slate-300 px-3 py-2 text-sm" name="institute">
+  <input class="min-h-11 w-full rounded-lg border border-slate-300 px-3 py-2 text-base" type="search" name="q" value="{{ filters.q }}" placeholder="আইডি, নাম বা মোবাইল" aria-label="শিক্ষার্থী খুঁজুন">
+  <select class="min-h-11 rounded-lg border border-slate-300 px-3 py-2 text-base" name="institute" aria-label="প্রতিষ্ঠান">
     <option value="">সব প্রতিষ্ঠান</option>
     {% for institute in institutes %}<option value="{{ institute.pk }}" {% if filters.institute == institute.pk|stringformat:"s" %}selected{% endif %}>{{ institute.name_bn }}</option>{% endfor %}
   </select>
-  <select class="rounded-md border border-slate-300 px-3 py-2 text-sm" name="academic_class">
+  <select class="min-h-11 rounded-lg border border-slate-300 px-3 py-2 text-base" name="academic_class" aria-label="শ্রেণি">
     <option value="">সব শ্রেণি</option>
     {% for item in classes %}<option value="{{ item.pk }}" {% if filters.academic_class == item.pk|stringformat:"s" %}selected{% endif %}>{{ item.name_bn }}</option>{% endfor %}
   </select>
-  <select class="rounded-md border border-slate-300 px-3 py-2 text-sm" name="category">
+  <select class="min-h-11 rounded-lg border border-slate-300 px-3 py-2 text-base" name="category" aria-label="বিভাগ">
     <option value="">সব বিভাগ</option>
     {% for category in categories %}<option value="{{ category.pk }}" {% if filters.category == category.pk|stringformat:"s" %}selected{% endif %}>{{ category.name_bn }}</option>{% endfor %}
   </select>
-  <select class="rounded-md border border-slate-300 px-3 py-2 text-sm" name="verification_status">
+  <select class="min-h-11 rounded-lg border border-slate-300 px-3 py-2 text-base" name="verification_status" aria-label="যাচাই অবস্থা">
     <option value="">সব যাচাই অবস্থা</option>
     {% for value, label in statuses %}<option value="{{ value }}" {% if filters.verification_status == value %}selected{% endif %}>{{ label }}</option>{% endfor %}
   </select>
-  <select class="rounded-md border border-slate-300 px-3 py-2 text-sm" name="session">
+  <select class="min-h-11 rounded-lg border border-slate-300 px-3 py-2 text-base" name="session" aria-label="সেশন">
     <option value="">সব সেশন</option>
     {% for session in sessions %}<option value="{{ session.pk }}" {% if filters.session == session.pk|stringformat:"s" %}selected{% endif %}>{{ session.name_bn }}</option>{% endfor %}
   </select>

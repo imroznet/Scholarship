@@ -3,7 +3,7 @@ from django import forms
 
 class BanglaFormMixin:
     input_class = (
-        "w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm "
+        "w-full min-h-11 rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-base "
         "text-slate-900 shadow-sm focus:border-pine-700 focus:outline-none focus:ring-2 focus:ring-pine-700/20"
     )
     checkbox_class = "h-4 w-4 rounded border-slate-300 text-pine-800 focus:ring-pine-700"

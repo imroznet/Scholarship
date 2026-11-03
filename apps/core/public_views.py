@@ -1,13 +1,21 @@
 from django.http import Http404, HttpResponse
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.views import View
 from django.views.generic import TemplateView
 
 from apps.core.http import guarded_file_response
 from apps.examinations.models import Examination
 from apps.notices.models import Notice, public_notices
-from apps.results.models import Winner
+from apps.results.announcements import (
+    DISMISS_COOKIE,
+    dismissal_token,
+    landing_announcement,
+    published_winner_queryset,
+    visitor_has_dismissed,
+)
+from apps.results.models import Winner, WinnerAnnouncement
 from apps.schedules.models import Schedule
+from apps.sessions.models import ScholarshipSession
 from apps.sessions.selectors import get_active_session
 
 PUBLIC_ASSETS = {
@@ -19,26 +27,21 @@ PUBLIC_ASSETS = {
 
 
 def published_winners(session):
-    return (
-        Winner.objects.filter(
-            scholarship_session=session,
-            is_published=True,
-            student__deleted_at__isnull=True,
-            student__is_active=True,
-        )
-        .select_related(
-            "student",
-            "student__institute",
-            "student__academic_class",
-            "student__category",
-            "award_type",
-        )
-        .order_by("position", "award_type__display_order", "student__name_bn")
-    )
+    return published_winner_queryset(session)
 
 
 class HomeView(TemplateView):
     template_name = "public/home.html"
+
+    def get(self, request, *args, **kwargs):
+        announcement = landing_announcement(get_active_session())
+        if (
+            announcement is not None
+            and request.GET.get("home") != "1"
+            and not visitor_has_dismissed(request, announcement)
+        ):
+            return redirect("public:announcement")
+        return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -103,6 +106,63 @@ class NoticeDetailView(TemplateView):
         notice = get_object_or_404(public_notices(session), slug=self.kwargs["slug"])
         context["notice"] = notice
         return context
+
+
+class AnnouncementView(TemplateView):
+    template_name = "public/announcement.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        session = get_active_session()
+        announcement = landing_announcement(session)
+        context["announcement"] = announcement
+        context["winners"] = published_winners(session) if announcement else Winner.objects.none()
+        context["announcement_token"] = dismissal_token(announcement) if announcement else ""
+        context["page_branding"] = getattr(session, "branding", None) if session else None
+        return context
+
+
+class AnnouncementSessionView(TemplateView):
+    template_name = "public/announcement.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        session = get_object_or_404(ScholarshipSession, code=self.kwargs["code"])
+        announcement = (
+            WinnerAnnouncement.objects.filter(
+                scholarship_session=session,
+                is_published=True,
+            )
+            .select_related("scholarship_session")
+            .first()
+        )
+        if announcement is None:
+            raise Http404
+        context["announcement"] = announcement
+        context["winners"] = published_winners(session)
+        context["announcement_token"] = ""
+        context["page_branding"] = getattr(session, "branding", None)
+        context["historical"] = True
+        if context["page_branding"] is not None:
+            context["branding"] = context["page_branding"]
+        return context
+
+
+class AnnouncementDismissView(View):
+    def get(self, request):
+        announcement = landing_announcement(get_active_session())
+        response = redirect("public:home")
+        if announcement is not None:
+            response.set_cookie(
+                DISMISS_COOKIE,
+                dismissal_token(announcement),
+                max_age=60 * 60 * 24 * 365,
+                samesite="Lax",
+                secure=request.is_secure(),
+                httponly=False,
+                path="/",
+            )
+        return response
 
 
 class WinnerListView(TemplateView):

@@ -47,7 +47,10 @@
     {% if warnings %}
       <label class="flex items-center gap-2 text-sm"><input type="checkbox" name="confirm_duplicates" value="1"> মিল থাকা সত্ত্বেও সংরক্ষণ করুন</label>
     {% endif %}
-    <button class="btn-primary" type="submit">সংরক্ষণ</button>
+    <div class="flex flex-col gap-3 sm:flex-row">
+      <button class="btn-primary w-full sm:w-auto" type="submit">সংরক্ষণ</button>
+      <a class="btn-secondary w-full sm:w-auto" href="{% url 'students:list' %}">বাতিল</a>
+    </div>
   </form>
 {% endif %}
 {% endblock %}

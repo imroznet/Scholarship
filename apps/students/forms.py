@@ -10,6 +10,8 @@ from apps.core.models import WebsiteSetting
 from apps.institutes.models import Institute
 
 DOB_INPUT_FORMAT = "%d/%m/%Y"
+DEFAULT_UPAZILA = "সখিপুর"
+DEFAULT_DISTRICT = "টাঙ্গাইল"
 
 
 class DayMonthYearInput(forms.TextInput):
@@ -87,7 +89,8 @@ class StudentForm(BanglaFormMixin, forms.Form):
     photo = forms.FileField(label="ছবি", required=False)
     is_active = forms.BooleanField(label="সক্রিয়", required=False, initial=True)
 
-    def __init__(self, *args, institutes, classes, include_active=False, **kwargs):
+    def __init__(self, *args, institutes, classes, include_active=False, existing_student=None, **kwargs):
+        self.existing_student = existing_student
         super().__init__(*args, **kwargs)
         self.fields["institute"].queryset = institutes
         self.fields["academic_class"].queryset = classes
@@ -98,3 +101,23 @@ class StudentForm(BanglaFormMixin, forms.Form):
         self.fields["date_of_birth"].error_messages["future"] = DayMonthYearField.default_error_messages["future"]
         if not include_active:
             del self.fields["is_active"]
+        if self.is_bound and hasattr(self.data, "copy"):
+            upazila = self._location_value("upazila", DEFAULT_UPAZILA)
+            district = self._location_value("district", DEFAULT_DISTRICT)
+            updated = self.data.copy()
+            updated["upazila"] = upazila
+            updated["district"] = district
+            self.data = updated
+        elif self.existing_student is None:
+            self.fields["upazila"].initial = DEFAULT_UPAZILA
+            self.fields["district"].initial = DEFAULT_DISTRICT
+
+    def _location_value(self, field_name, default):
+        raw = (self.data.get(field_name) or "").strip() if hasattr(self.data, "get") else ""
+        if raw:
+            return raw
+        if self.existing_student is not None:
+            stored = (getattr(self.existing_student, field_name, "") or "").strip()
+            if stored:
+                return stored
+        return default

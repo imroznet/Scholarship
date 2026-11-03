@@ -119,7 +119,7 @@ class ScholarshipDataMixin:
         payload = {
             "name_bn": "রাহিমা খাতুন",
             "name_en": "Rahima Khatun",
-            "date_of_birth": "2012-05-02",
+            "date_of_birth": "02/05/2012",
             "mobile": "01711111111",
             "father_name": "করিম উদ্দিন",
             "father_mobile": "01811111111",

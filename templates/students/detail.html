@@ -1,0 +1,45 @@
+{% extends "dashboard/base.html" %}
+{% load scholarship_tags %}
+{% block content %}
+<div class="flex flex-wrap items-start justify-between gap-3">
+  <div>
+    <h1 class="text-2xl font-bold text-pine-900">{{ student.name_bn }}</h1>
+    <p class="font-latin text-slate-600">{{ student.student_id }}</p>
+  </div>
+  {% if student.photo %}<img src="{% url 'students:photo' student.pk %}" alt="" class="h-28 w-24 rounded object-cover">{% endif %}
+</div>
+{% if student.is_deleted %}<p class="mt-3 text-sm text-red-700">এই রেকর্ড সরিয়ে রাখা হয়েছে।</p>{% endif %}
+<div class="card mt-4 grid gap-2 text-sm md:grid-cols-2">
+  <p>ইংরেজি নাম: <span class="font-latin">{{ student.name_en }}</span></p>
+  <p>জন্ম তারিখ: {{ student.date_of_birth|bangla_date }}</p>
+  <p>মোবাইল: <span class="font-latin">{{ student.mobile }}</span></p>
+  <p>পিতা: {{ student.father_name }} · <span class="font-latin">{{ student.father_mobile }}</span></p>
+  <p>মাতা: {{ student.mother_name }} · <span class="font-latin">{{ student.mother_mobile }}</span></p>
+  <p>ঠিকানা: {{ student.village }}, {{ student.post_office }}, {{ student.upazila }}, {{ student.district }}</p>
+  <p>প্রতিষ্ঠান: {{ student.institute.name_bn }}</p>
+  <p>বিভাগ: {{ student.category_name_bn }}</p>
+  <p>শ্রেণি: {{ student.academic_class.name_bn }}</p>
+  <p>সেশন: {{ student.scholarship_session.name_bn }}</p>
+  <p>যাচাই: {{ student.get_verification_status_display }}</p>
+</div>
+<div class="no-print mt-4 flex flex-wrap gap-3">
+  <a class="btn-secondary" href="{% url 'students:edit' student.pk %}">সম্পাদনা</a>
+  <a class="btn-secondary" href="{% url 'students:print' student.pk %}">প্রিন্ট</a>
+  {% if request.user.is_super_admin and not student.is_deleted %}
+    <form method="post" action="{% url 'students:delete' student.pk %}" onsubmit="return confirm('রেকর্ড সরিয়ে রাখবেন?');">{% csrf_token %}<button class="btn-danger" type="submit">সরিয়ে রাখুন</button></form>
+  {% endif %}
+  {% if request.user.is_super_admin and student.is_deleted %}
+    <form method="post" action="{% url 'students:restore' student.pk %}">{% csrf_token %}<button class="btn-primary" type="submit">ফিরিয়ে আনুন</button></form>
+  {% endif %}
+</div>
+{% if request.user.is_super_admin %}
+  <section class="card mt-6">
+    <h2 class="font-semibold">যাচাইয়ের ইতিহাস</h2>
+    <ul class="mt-3 space-y-2 text-sm">
+      {% for item in history %}
+        <li>{{ item.verified_at|bangla_date }} · {{ item.get_status_display }} · {{ item.remarks }}</li>
+      {% endfor %}
+    </ul>
+  </section>
+{% endif %}
+{% endblock %}

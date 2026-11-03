@@ -1,0 +1,28 @@
+{% extends "dashboard/base.html" %}
+{% block content %}
+<h1 class="text-2xl font-bold text-pine-900">নিবন্ধন নিয়ন্ত্রণ</h1>
+<form method="get" class="mt-4"><select name="session" class="rounded border px-3 py-2 text-sm" onchange="this.form.submit()">{% for item in sessions %}<option value="{{ item.pk }}" {% if session and item.pk == session.pk %}selected{% endif %}>{{ item.name_bn }}</option>{% endfor %}</select></form>
+{% if session %}
+<form method="post" class="mt-4">{% csrf_token %}<input type="hidden" name="session" value="{{ session.pk }}">
+<div class="table-wrap"><table class="data-table"><thead><tr><th></th><th>শ্রেণি</th><th>অবস্থা</th><th>শুরু</th><th>শেষ</th></tr></thead>
+<tbody>{% for row in rows %}<tr>
+<td><input type="checkbox" name="class_ids" value="{{ row.academic_class_id }}"></td>
+<td>{{ row.academic_class.name_bn }}</td>
+<td>{% if row.is_currently_open %}খোলা{% elif row.is_open %}সময়সীমার বাইরে{% else %}বন্ধ{% endif %}</td>
+<td class="font-latin text-xs">{{ row.opening_at|date:"Y-m-d H:i" }}</td>
+<td class="font-latin text-xs">{{ row.closing_at|date:"Y-m-d H:i" }}</td>
+</tr>{% endfor %}</tbody></table></div>
+<div class="mt-3 flex gap-3"><button class="btn-primary" name="action" value="open" type="submit">নির্বাচিত শ্রেণি খুলুন</button><button class="btn-secondary" name="action" value="close" type="submit">নির্বাচিত শ্রেণি বন্ধ করুন</button></div>
+</form>
+{% for row in rows %}
+<form method="post" class="card mt-3 grid gap-3 md:grid-cols-4">{% csrf_token %}
+<input type="hidden" name="session" value="{{ session.pk }}"><input type="hidden" name="action" value="schedule"><input type="hidden" name="row_id" value="{{ row.pk }}">
+<p class="text-sm font-semibold md:col-span-4">{{ row.academic_class.name_bn }}</p>
+<input class="rounded border px-3 py-2 text-sm" type="datetime-local" name="opening_at" value="{{ row.opening_at|date:'Y-m-d\\TH:i' }}">
+<input class="rounded border px-3 py-2 text-sm" type="datetime-local" name="closing_at" value="{{ row.closing_at|date:'Y-m-d\\TH:i' }}">
+<label class="text-sm"><input type="checkbox" name="is_open" value="1" {% if row.is_open %}checked{% endif %}> খোলা</label>
+<button class="btn-secondary" type="submit">সময় সংরক্ষণ</button>
+</form>
+{% endfor %}
+{% endif %}
+{% endblock %}

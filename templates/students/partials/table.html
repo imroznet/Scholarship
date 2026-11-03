@@ -1,0 +1,31 @@
+<div id="student-table">
+  <div class="table-wrap">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>আইডি</th><th>নাম</th><th>মোবাইল</th><th>প্রতিষ্ঠান</th><th>শ্রেণি</th><th>বিভাগ</th><th>যাচাই</th><th class="no-print"></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for student in students %}
+          <tr>
+            <td class="font-latin">{{ student.student_id }}</td>
+            <td>{{ student.name_bn }}<div class="font-latin text-xs text-slate-500">{{ student.name_en }}</div></td>
+            <td class="font-latin">{{ student.mobile }}</td>
+            <td>{{ student.institute.name_bn }}</td>
+            <td>{{ student.academic_class.name_bn }}</td>
+            <td>{{ student.category_name_bn }}</td>
+            <td>{{ student.get_verification_status_display }}</td>
+            <td class="no-print space-x-2">
+              <a class="underline" href="{% url 'students:detail' student.pk %}">বিস্তারিত</a>
+              <a class="underline" href="{% url 'students:print' student.pk %}">প্রিন্ট</a>
+            </td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="8">কোনো শিক্ষার্থী পাওয়া যায়নি।</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% include "dashboard/includes/pagination.html" %}
+</div>

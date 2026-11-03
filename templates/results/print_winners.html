@@ -1,0 +1,10 @@
+{% load static %}
+<!DOCTYPE html><html lang="bn"><head><meta charset="utf-8"><title>বিজয়ী</title>
+<link rel="stylesheet" href="{% static 'css/fonts.css' %}"><link rel="stylesheet" href="{% static 'css/app.css' %}"></head>
+<body class="p-6"><h1 class="text-xl font-bold">{{ branding.name_bn }} — প্রকাশিত বিজয়ী</h1>
+<table class="data-table mt-4"><thead><tr><th>ছবি</th><th>নাম</th><th>আইডি</th><th>প্রতিষ্ঠান</th><th>শ্রেণি</th><th>বিভাগ</th><th>পুরস্কার</th></tr></thead>
+<tbody>{% for winner in winners %}<tr>
+<td>{% if winner.student.photo %}<img src="{% url 'public:winner_photo' winner.pk %}" alt="" class="h-12 w-10 object-cover">{% endif %}</td>
+<td>{{ winner.student.name_bn }}</td><td>{{ winner.student.student_id }}</td><td>{{ winner.student.institute.name_bn }}</td><td>{{ winner.student.academic_class.name_bn }}</td><td>{{ winner.student.category_name_bn }}</td><td>{{ winner.award_type.name_bn }}</td>
+</tr>{% endfor %}</tbody></table>
+<button class="no-print btn-primary mt-4" onclick="window.print()">প্রিন্ট</button></body></html>

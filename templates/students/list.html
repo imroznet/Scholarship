@@ -1,0 +1,42 @@
+{% extends "dashboard/base.html" %}
+{% load scholarship_tags %}
+{% block content %}
+<div class="flex flex-wrap items-center justify-between gap-3">
+  <h1 class="text-2xl font-bold text-pine-900">শিক্ষার্থী ব্যবস্থাপনা</h1>
+  <a class="btn-primary" href="{% url 'students:create' %}">শিক্ষার্থী যোগ</a>
+</div>
+<form class="card mt-4 grid gap-3 md:grid-cols-3" method="get"
+      hx-get="{% url 'students:list' %}" hx-trigger="change, keyup delay:400ms from:input[name='q']" hx-target="#student-table" hx-push-url="true">
+  <input class="w-full rounded-md border border-slate-300 px-3 py-2 text-sm" type="search" name="q" value="{{ filters.q }}" placeholder="আইডি, নাম বা মোবাইল">
+  <select class="rounded-md border border-slate-300 px-3 py-2 text-sm" name="institute">
+    <option value="">সব প্রতিষ্ঠান</option>
+    {% for institute in institutes %}<option value="{{ institute.pk }}" {% if filters.institute == institute.pk|stringformat:"s" %}selected{% endif %}>{{ institute.name_bn }}</option>{% endfor %}
+  </select>
+  <select class="rounded-md border border-slate-300 px-3 py-2 text-sm" name="academic_class">
+    <option value="">সব শ্রেণি</option>
+    {% for item in classes %}<option value="{{ item.pk }}" {% if filters.academic_class == item.pk|stringformat:"s" %}selected{% endif %}>{{ item.name_bn }}</option>{% endfor %}
+  </select>
+  <select class="rounded-md border border-slate-300 px-3 py-2 text-sm" name="category">
+    <option value="">সব বিভাগ</option>
+    {% for category in categories %}<option value="{{ category.pk }}" {% if filters.category == category.pk|stringformat:"s" %}selected{% endif %}>{{ category.name_bn }}</option>{% endfor %}
+  </select>
+  <select class="rounded-md border border-slate-300 px-3 py-2 text-sm" name="verification_status">
+    <option value="">সব যাচাই অবস্থা</option>
+    {% for value, label in statuses %}<option value="{{ value }}" {% if filters.verification_status == value %}selected{% endif %}>{{ label }}</option>{% endfor %}
+  </select>
+  <select class="rounded-md border border-slate-300 px-3 py-2 text-sm" name="session">
+    <option value="">সব সেশন</option>
+    {% for session in sessions %}<option value="{{ session.pk }}" {% if filters.session == session.pk|stringformat:"s" %}selected{% endif %}>{{ session.name_bn }}</option>{% endfor %}
+  </select>
+  {% if request.user.is_super_admin %}
+    <label class="flex items-center gap-2 text-sm"><input type="checkbox" name="deleted" value="1" {% if filters.deleted == "1" %}checked{% endif %}> সরানো রেকর্ড</label>
+  {% endif %}
+  <button class="btn-secondary" type="submit">খুঁজুন</button>
+</form>
+<div class="no-print mt-4 flex flex-wrap gap-3 text-sm">
+  <a class="underline" href="{% url 'reports:students_xlsx' %}?{{ request.GET.urlencode }}">এক্সেল</a>
+  <a class="underline" href="{% url 'reports:students_csv' %}?{{ request.GET.urlencode }}">সিএসভি</a>
+  <a class="underline" href="{% url 'reports:print_students' %}?{{ request.GET.urlencode }}">তালিকা প্রিন্ট</a>
+</div>
+<div class="mt-4">{% include "students/partials/table.html" %}</div>
+{% endblock %}

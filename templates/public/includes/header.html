@@ -1,0 +1,32 @@
+{% load static %}
+<header class="border-b border-pine-100 bg-white">
+  <div class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4">
+    <a href="{% url 'public:home' %}" class="flex items-center gap-3">
+      {% if branding and branding.logo %}
+        <img src="{% url 'public:brand_asset' 'logo' %}" alt="" class="h-14 w-14 object-contain">
+      {% else %}
+        <img src="{% static 'images/logo-fallback.png' %}" alt="" class="h-14 w-14 object-contain">
+      {% endif %}
+      <span>
+        <span class="block text-lg font-semibold text-pine-900">{{ branding.name_bn|default:"স্কলারশিপ" }}</span>
+        {% if branding and branding.slogan_bn %}<span class="block text-sm text-slate-600">{{ branding.slogan_bn }}</span>{% endif %}
+      </span>
+    </a>
+    {% if branding and branding.sponsor_logo %}
+      <img src="{% url 'public:brand_asset' 'sponsor-logo' %}" alt="{{ branding.sponsor_name_bn }}" class="h-12 w-auto max-w-[8rem] object-contain">
+    {% elif branding and branding.sponsor_name_bn %}
+      <span class="text-sm font-medium text-pine-800">{{ branding.sponsor_name_bn }}</span>
+    {% endif %}
+  </div>
+  <nav class="bg-pine-900 text-white" aria-label="প্রধান মেনু">
+    <div class="mx-auto flex max-w-6xl flex-wrap gap-1 px-4 py-2 text-sm">
+      <a class="rounded px-3 py-2 hover:bg-white/10" href="{% url 'public:home' %}">প্রচ্ছদ</a>
+      <a class="rounded px-3 py-2 hover:bg-white/10" href="{% url 'public:about' %}">পরিচিতি</a>
+      <a class="rounded px-3 py-2 hover:bg-white/10" href="{% url 'public:process' %}">আবেদন প্রক্রিয়া</a>
+      <a class="rounded px-3 py-2 hover:bg-white/10" href="{% url 'public:schedule' %}">সময়সূচি</a>
+      <a class="rounded px-3 py-2 hover:bg-white/10" href="{% url 'public:notices' %}">নোটিশ</a>
+      <a class="rounded px-3 py-2 hover:bg-white/10" href="{% url 'public:winners' %}">বিজয়ী</a>
+      <a class="rounded px-3 py-2 hover:bg-white/10" href="{% url 'public:contact' %}">যোগাযোগ</a>
+    </div>
+  </nav>
+</header>

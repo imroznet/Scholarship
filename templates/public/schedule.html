@@ -1,0 +1,22 @@
+{% extends "public/base.html" %}
+{% load scholarship_tags %}
+{% block title %}সময়সূচি{% endblock %}
+{% block content %}
+<section class="mx-auto max-w-3xl space-y-4 px-4 py-10">
+  <h1 class="text-3xl font-bold text-pine-900">সময়সূচি</h1>
+  {% include "public/includes/countdown.html" with schedule=active_stage %}
+  {% for item in schedules %}
+    <article class="card {% if item.is_active %}border-pine-700{% endif %}">
+      <h2 class="font-semibold text-pine-900">{{ item.title_bn }}</h2>
+      {% if item.description_bn %}<p class="mt-2 text-sm leading-6">{{ item.description_bn|linebreaksbr }}</p>{% endif %}
+      <p class="mt-2 font-latin text-sm text-slate-600">
+        {% if item.start_at %}{{ item.start_at|bangla_date }}{% endif %}
+        {% if item.end_at %} – {{ item.end_at|bangla_date }}{% endif %}
+      </p>
+      {% if item.is_active %}<p class="mt-2 text-sm font-semibold text-pine-800">বর্তমান পর্যায়</p>{% endif %}
+    </article>
+  {% empty %}
+    <p>সময়সূচি এখনো প্রকাশ করা হয়নি।</p>
+  {% endfor %}
+</section>
+{% endblock %}

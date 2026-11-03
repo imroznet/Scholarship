@@ -1,0 +1,106 @@
+{% extends "public/base.html" %}
+{% load scholarship_tags static %}
+{% block content %}
+<section class="bg-pine-50">
+  <div class="mx-auto grid max-w-6xl items-center gap-8 px-4 py-12 md:grid-cols-[1.4fr_0.8fr]">
+    <div>
+      <p class="text-sm font-semibold text-pine-700">{% if branding %}{{ branding.sponsor_name_bn }}{% endif %}</p>
+      <h1 class="mt-2 text-3xl font-bold text-pine-900 md:text-4xl">{{ branding.name_bn|default:"স্কলারশিপ তথ্য শীঘ্রই প্রকাশ করা হবে" }}</h1>
+      {% if branding and branding.name_en %}<p class="mt-2 font-latin text-slate-600">{{ branding.name_en }}</p>{% endif %}
+      {% if branding and branding.description_bn %}<p class="mt-4 leading-7 text-slate-700">{{ branding.description_bn|linebreaksbr }}</p>{% endif %}
+      <div class="mt-6 flex flex-wrap gap-3">
+        <a class="btn-primary" href="{% url 'public:process' %}">আবেদন প্রক্রিয়া</a>
+        <a class="btn-secondary" href="{% url 'public:schedule' %}">সময়সূচি</a>
+      </div>
+    </div>
+    <div class="flex items-center justify-center gap-6 rounded-2xl bg-white p-6 shadow-sm">
+      {% if branding and branding.logo %}
+        <img src="{% url 'public:brand_asset' 'logo' %}" alt="স্কলারশিপ লোগো" class="h-28 w-28 object-contain">
+      {% else %}
+        <img src="{% static 'images/logo-fallback.png' %}" alt="" class="h-28 w-28 object-contain">
+      {% endif %}
+      {% if branding and branding.sponsor_logo %}
+        <img src="{% url 'public:brand_asset' 'sponsor-logo' %}" alt="স্পনসর লোগো" class="h-28 w-28 object-contain">
+      {% endif %}
+    </div>
+  </div>
+</section>
+<div class="mx-auto max-w-6xl space-y-10 px-4 py-10">
+  {% if not active_session %}
+    <p class="card">বর্তমানে কোনো সক্রিয় স্কলারশিপ সেশন নেই।</p>
+  {% endif %}
+  {% include "public/includes/countdown.html" %}
+  {% if branding and branding.objectives_bn %}
+    <section>
+      <h2 class="text-2xl font-semibold text-pine-900">উদ্দেশ্য</h2>
+      <ul class="mt-4 grid gap-3 md:grid-cols-2">
+        {% for line in branding.objectives_bn|lines %}
+          <li class="rounded-lg border border-pine-100 bg-pine-50 px-4 py-3">{{ line }}</li>
+        {% endfor %}
+      </ul>
+    </section>
+  {% endif %}
+  {% if branding and branding.eligibility_bn %}
+    <section>
+      <h2 class="text-2xl font-semibold text-pine-900">যোগ্যতা</h2>
+      <ul class="mt-4 list-disc space-y-2 pl-5">
+        {% for line in branding.eligibility_bn|lines %}<li>{{ line }}</li>{% endfor %}
+      </ul>
+    </section>
+  {% endif %}
+  <section>
+    <h2 class="text-2xl font-semibold text-pine-900">আবেদন প্রক্রিয়া</h2>
+    <p class="mt-3 text-slate-700">অনলাইন আবেদন গ্রহণ করা হয় না। নির্ধারিত পদ্ধতিতে আবেদন করতে হয়।</p>
+    {% if branding and branding.application_process_bn %}
+      <ol class="mt-4 list-decimal space-y-2 pl-5">
+        {% for line in branding.application_process_bn|lines %}<li>{{ line }}</li>{% endfor %}
+      </ol>
+    {% endif %}
+  </section>
+  {% if exams %}
+    <section>
+      <h2 class="text-2xl font-semibold text-pine-900">পরীক্ষার তথ্য</h2>
+      <div class="mt-4 grid gap-4 md:grid-cols-2">
+        {% for exam in exams %}
+          <article class="card">
+            <h3 class="font-semibold text-pine-900">{{ exam.name_bn }}</h3>
+            <p class="mt-2 text-sm">শ্রেণি: {{ exam.academic_class.name_bn }}</p>
+            <p class="text-sm">তারিখ: {{ exam.exam_date|bangla_date }}</p>
+            <p class="font-latin text-sm">{{ exam.start_time|time:"H:i" }} – {{ exam.end_time|time:"H:i" }}</p>
+            <p class="text-sm">স্থান: {{ exam.venue }}</p>
+          </article>
+        {% endfor %}
+      </div>
+    </section>
+  {% endif %}
+  <section>
+    <div class="flex items-center justify-between">
+      <h2 class="text-2xl font-semibold text-pine-900">নোটিশ</h2>
+      <a class="text-sm font-semibold text-pine-800 underline" href="{% url 'public:notices' %}">সব নোটিশ</a>
+    </div>
+    <div class="mt-4 space-y-3">
+      {% for notice in notices %}
+        <a class="card block hover:border-pine-300" href="{% url 'public:notice_detail' notice.slug %}">
+          <p class="font-semibold">{{ notice.title_bn }}</p>
+          <p class="mt-1 text-sm text-slate-600">{{ notice.published_at|bangla_date }}</p>
+        </a>
+      {% empty %}
+        <p class="text-slate-600">এখন কোনো প্রকাশিত নোটিশ নেই।</p>
+      {% endfor %}
+    </div>
+  </section>
+  <section>
+    <div class="flex items-center justify-between">
+      <h2 class="text-2xl font-semibold text-pine-900">প্রকাশিত বিজয়ী</h2>
+      <a class="text-sm font-semibold text-pine-800 underline" href="{% url 'public:winners' %}">সব বিজয়ী</a>
+    </div>
+    <div class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      {% for winner in winners %}
+        {% include "public/includes/winner_card.html" %}
+      {% empty %}
+        <p class="text-slate-600">এখনো কোনো বিজয়ী প্রকাশ করা হয়নি।</p>
+      {% endfor %}
+    </div>
+  </section>
+</div>
+{% endblock %}

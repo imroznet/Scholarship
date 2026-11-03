@@ -1,0 +1,7 @@
+{% extends "dashboard/base.html" %}
+{% load scholarship_tags %}
+{% block content %}
+<div class="flex items-center justify-between"><h1 class="text-2xl font-bold text-pine-900">শ্রেণি ব্যবস্থাপনা</h1><a class="btn-primary" href="{% url 'academics:class_create' %}">শ্রেণি যোগ</a></div>
+<div class="table-wrap mt-6"><table class="data-table"><thead><tr><th>নাম</th><th>কোড</th><th>শিক্ষার্থী</th><th>অবস্থা</th><th></th></tr></thead>
+<tbody>{% for item in classes %}<tr><td>{{ item.name_bn }}</td><td class="font-latin">{{ item.code }}</td><td>{{ item.student_count|bangla_digits }}</td><td>{% if item.is_active %}সক্রিয়{% else %}নিষ্ক্রিয়{% endif %}</td><td><a class="underline" href="{% url 'academics:class_edit' item.pk %}">সম্পাদনা</a></td></tr>{% endfor %}</tbody></table></div>
+{% endblock %}

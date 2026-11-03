@@ -1,0 +1,40 @@
+{% load static %}
+<aside class="no-print w-72 shrink-0 bg-pine-900 text-white md:min-h-screen"
+       :class="open ? 'block' : 'hidden md:block'">
+  <div class="flex items-center gap-3 px-4 py-5">
+    {% if branding and branding.logo %}
+      <img src="{% url 'public:brand_asset' 'logo' %}" alt="" class="h-12 w-12 bg-white object-contain p-1">
+    {% else %}
+      <img src="{% static 'images/logo-fallback.png' %}" alt="" class="h-12 w-12 bg-white object-contain p-1">
+    {% endif %}
+    <div>
+      <p class="text-sm font-semibold leading-5">{{ branding.name_bn|default:"ড্যাশবোর্ড" }}</p>
+      {% if branding and branding.sponsor_name_bn %}<p class="text-xs text-pine-100">{{ branding.sponsor_name_bn }}</p>{% endif %}
+    </div>
+  </div>
+  <nav class="space-y-1 px-3 pb-8 text-sm" aria-label="ড্যাশবোর্ড মেনু">
+    <a class="nav-link {% if request.resolver_match.namespace == 'dashboard' %}nav-link-active{% endif %}" href="{% url 'dashboard:home' %}">ড্যাশবোর্ড</a>
+    <a class="nav-link {% if request.resolver_match.namespace == 'students' %}nav-link-active{% endif %}" href="{% url 'students:list' %}">শিক্ষার্থী ব্যবস্থাপনা</a>
+    {% if request.user.is_super_admin %}
+      <a class="nav-link {% if request.resolver_match.namespace == 'branding' %}nav-link-active{% endif %}" href="{% url 'branding:manage' %}">স্কলারশিপ পরিচিতি ও ব্র্যান্ডিং</a>
+      <a class="nav-link {% if request.resolver_match.namespace == 'sessions' %}nav-link-active{% endif %}" href="{% url 'sessions:list' %}">স্কলারশিপ সেশন</a>
+      <a class="nav-link {% if request.resolver_match.namespace == 'institutes' and request.resolver_match.url_name == 'list' %}nav-link-active{% endif %}" href="{% url 'institutes:list' %}">শিক্ষা প্রতিষ্ঠান</a>
+      <a class="nav-link" href="{% url 'institutes:categories' %}">বিভাগ ব্যবস্থাপনা</a>
+      <a class="nav-link" href="{% url 'academics:classes' %}">শ্রেণি ব্যবস্থাপনা</a>
+      <a class="nav-link" href="{% url 'academics:registration' %}">নিবন্ধন নিয়ন্ত্রণ</a>
+      <a class="nav-link" href="{% url 'verification:list' %}">আবেদন যাচাই</a>
+      <a class="nav-link" href="{% url 'schedules:list' %}">সময়সূচি ব্যবস্থাপনা</a>
+      <a class="nav-link" href="{% url 'examinations:list' %}">পরীক্ষা ব্যবস্থাপনা</a>
+      <a class="nav-link" href="{% url 'results:home' %}">ফলাফল ব্যবস্থাপনা</a>
+      <a class="nav-link" href="{% url 'winners:list' %}">বিজয়ী ব্যবস্থাপনা</a>
+      <a class="nav-link" href="{% url 'winners:list' %}">সার্টিফিকেট</a>
+      <a class="nav-link" href="{% url 'notices:list' %}">নোটিশ</a>
+      <a class="nav-link" href="{% url 'users:list' %}">অ্যাডমিন ব্যবস্থাপনা</a>
+      <a class="nav-link" href="{% url 'audit:list' %}">কার্যক্রম লগ</a>
+      <a class="nav-link" href="{% url 'settings:manage' %}">সেটিংস</a>
+    {% endif %}
+    <a class="nav-link" href="{% url 'reports:index' %}">রিপোর্ট ও এক্সপোর্ট</a>
+    <a class="nav-link" href="{% url 'accounts:password' %}">পাসওয়ার্ড</a>
+    <a class="nav-link" href="{% url 'public:home' %}">পাবলিক সাইট</a>
+  </nav>
+</aside>

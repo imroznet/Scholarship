@@ -1,0 +1,12 @@
+{% load scholarship_tags %}
+{% if page_obj.paginator.num_pages > 1 %}
+  <nav class="no-print mt-4 flex items-center gap-3 text-sm" aria-label="পৃষ্ঠা">
+    {% if page_obj.has_previous %}
+      <a class="btn-secondary" href="{% querystring page=page_obj.previous_page_number %}">পূর্ববর্তী</a>
+    {% endif %}
+    <span>পৃষ্ঠা {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+    {% if page_obj.has_next %}
+      <a class="btn-secondary" href="{% querystring page=page_obj.next_page_number %}">পরবর্তী</a>
+    {% endif %}
+  </nav>
+{% endif %}

@@ -1,0 +1,24 @@
+{% extends "dashboard/base.html" %}
+{% load scholarship_tags %}
+{% block content %}
+<h1 class="text-2xl font-bold text-pine-900">সময়সূচি ব্যবস্থাপনা</h1>
+<p class="mt-2 text-sm text-slate-600">পর্যায় নিজে থেকে বদলায় না এবং ফলাফল নিজে থেকে প্রকাশ হয় না।</p>
+<form method="get" class="mt-4"><select name="session" class="rounded border px-3 py-2 text-sm" onchange="this.form.submit()">{% for item in sessions %}<option value="{{ item.pk }}" {% if session and item.pk == session.pk %}selected{% endif %}>{{ item.name_bn }}</option>{% endfor %}</select></form>
+<div class="mt-4 space-y-3">{% for schedule in schedules %}
+<article class="card">
+  <div class="flex flex-wrap items-center justify-between gap-3">
+    <div><h2 class="font-semibold">{{ schedule.title_bn }}</h2><p class="text-sm text-slate-600">{{ schedule.get_stage_display }} {% if schedule.is_active %}· সক্রিয়{% endif %}</p></div>
+    <div class="flex gap-2">
+      <a class="btn-secondary" href="{% url 'schedules:edit' schedule.pk %}">সম্পাদনা</a>
+      {% if schedule.is_active %}
+        <form method="post" action="{% url 'schedules:deactivate' schedule.pk %}">{% csrf_token %}<button class="btn-secondary" type="submit">নিষ্ক্রিয়</button></form>
+      {% else %}
+        <form method="post" action="{% url 'schedules:activate' schedule.pk %}">{% csrf_token %}<button class="btn-primary" type="submit">সক্রিয় করুন</button></form>
+      {% endif %}
+    </div>
+  </div>
+  <p class="mt-2 font-latin text-sm">{{ schedule.start_at|date:"Y-m-d H:i" }} – {{ schedule.end_at|date:"Y-m-d H:i" }}</p>
+  {% if schedule.is_active %}{% include "public/includes/countdown.html" %}{% endif %}
+</article>
+{% endfor %}</div>
+{% endblock %}

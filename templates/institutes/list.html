@@ -1,0 +1,7 @@
+{% extends "dashboard/base.html" %}
+{% block content %}
+<div class="flex items-center justify-between"><h1 class="text-2xl font-bold text-pine-900">শিক্ষা প্রতিষ্ঠান</h1><a class="btn-primary" href="{% url 'institutes:create' %}">প্রতিষ্ঠান যোগ</a></div>
+<form class="mt-4" method="get"><input class="rounded border border-slate-300 px-3 py-2 text-sm" type="search" name="q" value="{{ query }}" placeholder="নাম বা কোড"><button class="btn-secondary ml-2" type="submit">খুঁজুন</button></form>
+<div class="table-wrap mt-4"><table class="data-table"><thead><tr><th>নাম</th><th>কোড</th><th>বিভাগ</th><th>জেলা</th><th></th></tr></thead>
+<tbody>{% for institute in institutes %}<tr><td>{{ institute.name_bn }}</td><td class="font-latin">{{ institute.institute_code }}</td><td>{{ institute.category.name_bn }}</td><td>{{ institute.district }}</td><td class="space-x-2"><a class="underline" href="{% url 'institutes:edit' institute.pk %}">সম্পাদনা</a>{% if institute.is_active %}<form class="inline" method="post" action="{% url 'institutes:deactivate' institute.pk %}">{% csrf_token %}<button class="underline" type="submit">নিষ্ক্রিয়</button></form>{% endif %}</td></tr>{% empty %}<tr><td colspan="5">কোনো প্রতিষ্ঠান নেই।</td></tr>{% endfor %}</tbody></table></div>
+{% endblock %}

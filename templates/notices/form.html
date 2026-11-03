@@ -1,0 +1,10 @@
+{% extends "dashboard/base.html" %}
+{% block content %}
+<h1 class="text-2xl font-bold text-pine-900">{{ page_title }}</h1>
+<form method="post" enctype="multipart/form-data" class="card mt-4 max-w-3xl space-y-4">{% csrf_token %}
+{% for field in form %}{% include "dashboard/includes/field.html" with field=field %}{% endfor %}
+<label class="text-sm">সংযুক্তি<input class="mt-1 block w-full" type="file" name="attachment" accept="application/pdf,image/png,image/jpeg,image/webp"></label>
+{% if notice and notice.attachment %}<a class="underline" href="{% url 'notices:attachment' notice.pk %}">বর্তমান সংযুক্তি</a>{% endif %}
+<button class="btn-primary" type="submit">সংরক্ষণ</button>
+</form>
+{% endblock %}

@@ -1,0 +1,18 @@
+{% extends "dashboard/base.html" %}
+{% block content %}
+<h1 class="text-2xl font-bold text-pine-900">বিজয়ী ব্যবস্থাপনা</h1>
+<div class="mt-4 grid gap-4 lg:grid-cols-2">
+  <form method="post" class="card space-y-3">{% csrf_token %}<input type="hidden" name="form" value="winner"><h2 class="font-semibold">বিজয়ী নির্বাচন</h2>{% for field in form %}{% include "dashboard/includes/field.html" with field=field %}{% endfor %}<button class="btn-primary" type="submit">সংরক্ষণ (অপ্রকাশিত)</button></form>
+  <form method="post" class="card space-y-3">{% csrf_token %}<input type="hidden" name="form" value="award"><h2 class="font-semibold">পুরস্কারের ধরন</h2>{% for field in award_form %}{% include "dashboard/includes/field.html" with field=field %}{% endfor %}<button class="btn-secondary" type="submit">পুরস্কার যোগ</button>
+  <ul class="text-sm">{% for award in awards %}<li>{{ award.name_bn }} {% if not award.is_active %}(নিষ্ক্রিয়){% endif %}</li>{% endfor %}</ul></form>
+</div>
+<div class="mt-4 flex justify-end"><a class="btn-secondary" href="{% url 'winners:print' %}">প্রকাশিত তালিকা প্রিন্ট</a></div>
+<div class="table-wrap mt-4"><table class="data-table"><thead><tr><th>আইডি</th><th>নাম</th><th>পুরস্কার</th><th>প্রকাশ</th><th></th></tr></thead>
+<tbody>{% for winner in winners %}<tr>
+<td class="font-latin">{{ winner.student.student_id }}</td><td>{{ winner.student.name_bn }}</td><td>{{ winner.award_type.name_bn }}</td><td>{% if winner.is_published %}প্রকাশিত{% else %}অপ্রকাশিত{% endif %}</td>
+<td class="space-x-2">
+<form class="inline" method="post" action="{% url 'winners:publish' winner.pk %}">{% csrf_token %}<input type="hidden" name="publish" value="{% if winner.is_published %}0{% else %}1{% endif %}"><button class="underline" type="submit">{% if winner.is_published %}প্রত্যাহার{% else %}প্রকাশ করুন{% endif %}</button></form>
+<form class="inline" method="post" action="{% url 'certificates:issue' winner.pk %}">{% csrf_token %}<button class="underline" type="submit">সনদ</button></form>
+{% if winner.certificate %}<a class="underline" href="{% url 'certificates:download' winner.certificate.pk %}">পিডিএফ</a>{% endif %}
+</td></tr>{% empty %}<tr><td colspan="5">কোনো বিজয়ী নেই।</td></tr>{% endfor %}</tbody></table></div>
+{% endblock %}

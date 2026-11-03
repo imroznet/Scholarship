@@ -1,0 +1,16 @@
+{% extends "public/base.html" %}
+{% load scholarship_tags %}
+{% block title %}আবেদন প্রক্রিয়া{% endblock %}
+{% block content %}
+<section class="mx-auto max-w-3xl px-4 py-10">
+  <h1 class="text-3xl font-bold text-pine-900">আবেদন প্রক্রিয়া</h1>
+  <p class="mt-4 leading-7">অনলাইন আবেদন গ্রহণ করা হয় না। শিক্ষার্থীরা ওয়েবসাইটে নিবন্ধন ফরম পাঠাতে পারবেন না। আবেদন নির্ধারিত পদ্ধতিতে জমা দিতে হয় এবং অনুমোদিত ব্যবহারকারী তথ্য সংরক্ষণ করেন।</p>
+  {% if branding and branding.application_process_bn %}
+    <ol class="mt-6 list-decimal space-y-3 pl-5 leading-7">
+      {% for line in branding.application_process_bn|lines %}<li>{{ line }}</li>{% endfor %}
+    </ol>
+  {% else %}
+    <p class="mt-6">আবেদন প্রক্রিয়ার বিস্তারিত শীঘ্রই যোগ করা হবে।</p>
+  {% endif %}
+</section>
+{% endblock %}

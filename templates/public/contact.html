@@ -1,0 +1,20 @@
+{% extends "public/base.html" %}
+{% block title %}যোগাযোগ{% endblock %}
+{% block content %}
+<section class="mx-auto max-w-3xl px-4 py-10">
+  <h1 class="text-3xl font-bold text-pine-900">যোগাযোগ</h1>
+  {% if branding %}
+    <div class="card mt-6 space-y-3 leading-7">
+      <p class="text-xl font-semibold">{{ branding.name_bn }}</p>
+      {% if branding.contact_info %}<p>{{ branding.contact_info|linebreaksbr }}</p>{% endif %}
+      {% if branding.address %}<p>{{ branding.address|linebreaksbr }}</p>{% endif %}
+      {% if branding.phone %}<p>ফোন: <a class="underline" href="tel:{{ branding.phone }}">{{ branding.phone }}</a></p>{% endif %}
+      {% if branding.email %}<p>ইমেইল: <a class="underline" href="mailto:{{ branding.email }}">{{ branding.email }}</a></p>{% endif %}
+      {% if branding.sponsor_name_bn %}<p>স্পনসর: {{ branding.sponsor_name_bn }}</p>{% endif %}
+      {% if branding.sponsor_contact %}<p>{{ branding.sponsor_contact|linebreaksbr }}</p>{% endif %}
+    </div>
+  {% else %}
+    <p class="mt-6">যোগাযোগের তথ্য এখনো যোগ করা হয়নি।</p>
+  {% endif %}
+</section>
+{% endblock %}

@@ -1,0 +1,16 @@
+{% extends "public/base.html" %}
+{% load scholarship_tags %}
+{% block title %}পরিচিতি{% endblock %}
+{% block content %}
+<section class="mx-auto max-w-3xl px-4 py-10">
+  <h1 class="text-3xl font-bold text-pine-900">পরিচিতি</h1>
+  {% if branding %}
+    <div class="mt-6 space-y-4 leading-8 text-slate-800">
+      <p>{{ branding.about_bn|default:branding.description_bn|linebreaksbr }}</p>
+      {% if not branding.about_bn and not branding.description_bn %}<p>তথ্য শীঘ্রই যোগ করা হবে।</p>{% endif %}
+    </div>
+  {% else %}
+    <p class="mt-6">বর্তমানে কোনো সক্রিয় স্কলারশিপ সেশন নেই।</p>
+  {% endif %}
+</section>
+{% endblock %}

@@ -1,0 +1,10 @@
+Django>=5.2,<5.3
+django-environ>=0.11,<1
+Pillow>=10.4,<12
+openpyxl>=3.1,<4
+reportlab>=4.2,<5
+psycopg[binary]>=3.2,<4
+PyMySQL>=1.1,<2
+whitenoise>=6.7,<7
+uharfbuzz>=0.39,<1
+freetype-py>=2.5,<3

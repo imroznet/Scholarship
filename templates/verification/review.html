@@ -1,0 +1,12 @@
+{% extends "dashboard/base.html" %}
+{% load scholarship_tags %}
+{% block content %}
+<h1 class="text-2xl font-bold text-pine-900">{{ student.name_bn }}</h1>
+<p class="font-latin text-sm">{{ student.student_id }} · {{ student.institute.name_bn }} · {{ student.academic_class.name_bn }}</p>
+<form method="post" class="card mt-4 max-w-xl space-y-3">{% csrf_token %}
+<label class="text-sm">অবস্থা<select class="mt-1 w-full rounded border px-3 py-2" name="status">{% for value, label in statuses %}<option value="{{ value }}" {% if student.verification_status == value %}selected{% endif %}>{{ label }}</option>{% endfor %}</select></label>
+<label class="text-sm">মন্তব্য<textarea class="mt-1 w-full rounded border px-3 py-2" name="remarks" rows="3"></textarea></label>
+<button class="btn-primary" type="submit">সংরক্ষণ</button>
+</form>
+<ul class="mt-6 space-y-2 text-sm">{% for item in history %}<li>{{ item.verified_at|bangla_date }} · {{ item.get_status_display }} · {{ item.remarks }}</li>{% endfor %}</ul>
+{% endblock %}

@@ -1,0 +1,61 @@
+{% extends "dashboard/base.html" %}
+{% block content %}
+<h1 class="text-2xl font-bold text-pine-900">স্কলারশিপ পরিচিতি ও ব্র্যান্ডিং</h1>
+{% if not session %}
+  <p class="mt-4">আগে একটি সেশন তৈরি করুন।</p>
+{% else %}
+  <form method="get" class="mt-4">
+    <label class="text-sm" for="session">সেশন</label>
+    <select id="session" name="session" class="ml-2 rounded border border-slate-300 px-3 py-2 text-sm" onchange="this.form.submit()">
+      {% for item in sessions %}<option value="{{ item.pk }}" {% if item.pk == session.pk %}selected{% endif %}>{{ item.name_bn }}</option>{% endfor %}
+    </select>
+  </form>
+  <section class="card mt-4">
+    <h2 class="font-semibold">বর্তমান প্রিভিউ</h2>
+    <div class="mt-3 flex flex-wrap items-center gap-6">
+      {% if session.branding.logo %}<img src="{% url 'branding:asset' session.pk 'logo' %}" alt="স্কলারশিপ লোগো" class="h-20 w-20 object-contain">{% endif %}
+      {% if session.branding.sponsor_logo %}<img src="{% url 'branding:asset' session.pk 'sponsor-logo' %}" alt="স্পনসর লোগো" class="h-20 w-20 object-contain">{% endif %}
+      <div>
+        <p class="text-lg font-semibold">{{ session.branding.name_bn }}</p>
+        <p class="text-sm">{{ session.branding.sponsor_name_bn }}</p>
+      </div>
+    </div>
+  </section>
+  <form method="post" enctype="multipart/form-data" class="card mt-4 max-w-3xl space-y-4">
+    {% csrf_token %}
+    <input type="hidden" name="session" value="{{ session.pk }}">
+    {% for error in form.non_field_errors %}<p class="text-sm text-red-700">{{ error }}</p>{% endfor %}
+    <h2 class="font-semibold text-pine-900">স্কলারশিপ পরিচিতি</h2>
+    {% for field in form %}
+      {% if field.name == "sponsor_name_bn" %}<h2 class="pt-2 font-semibold text-pine-900">স্পনসর</h2>{% endif %}
+      {% if field.name == "certificate_title_bn" %}<h2 class="pt-2 font-semibold text-pine-900">সনদ</h2>{% endif %}
+      {% include "dashboard/includes/field.html" with field=field %}
+    {% endfor %}
+    <h2 class="font-semibold text-pine-900">লোগো</h2>
+    <div class="grid gap-4 md:grid-cols-2">
+      <label class="text-sm">স্কলারশিপ লোগো<input class="mt-1 block w-full" type="file" name="logo" accept="image/png,image/jpeg,image/webp"></label>
+      <label class="text-sm">স্পনসর লোগো<input class="mt-1 block w-full" type="file" name="sponsor_logo" accept="image/png,image/jpeg,image/webp"></label>
+      <label class="text-sm">ফ্যাভিকন<input class="mt-1 block w-full" type="file" name="favicon" accept="image/png,image/jpeg,image/webp"></label>
+      <label class="text-sm">অতিরিক্ত লোগো<input class="mt-1 block w-full" type="file" name="secondary_logo" accept="image/png,image/jpeg,image/webp"></label>
+      <label class="text-sm">স্বাক্ষর<input class="mt-1 block w-full" type="file" name="signature_image" accept="image/png,image/jpeg,image/webp"></label>
+      <label class="text-sm">সিল<input class="mt-1 block w-full" type="file" name="seal_image" accept="image/png,image/jpeg,image/webp"></label>
+    </div>
+    <div class="grid gap-2 text-sm md:grid-cols-2">
+      <label><input type="checkbox" name="clear_logo" value="1"> স্কলারশিপ লোগো সরান</label>
+      <label><input type="checkbox" name="clear_sponsor_logo" value="1"> স্পনসর লোগো সরান</label>
+      <label><input type="checkbox" name="clear_favicon" value="1"> ফ্যাভিকন সরান</label>
+      <label><input type="checkbox" name="clear_secondary_logo" value="1"> অতিরিক্ত লোগো সরান</label>
+      <label><input type="checkbox" name="clear_signature_image" value="1"> স্বাক্ষর সরান</label>
+      <label><input type="checkbox" name="clear_seal_image" value="1"> সিল সরান</label>
+    </div>
+    <button class="btn-primary" type="submit">সংরক্ষণ</button>
+  </form>
+  <form method="post" class="card mt-4 max-w-3xl" onsubmit="return confirm('ব্র্যান্ডিং নির্ধারিত অবস্থায় ফিরিয়ে আনবেন?');">
+    {% csrf_token %}
+    <input type="hidden" name="session" value="{{ session.pk }}">
+    <input type="hidden" name="reset" value="1">
+    <label class="flex items-center gap-2 text-sm"><input type="checkbox" name="confirm_reset" value="1" required> আমি রিসেট নিশ্চিত করছি</label>
+    <button class="btn-danger mt-3" type="submit">নির্ধারিত অবস্থায় ফিরুন</button>
+  </form>
+{% endif %}
+{% endblock %}

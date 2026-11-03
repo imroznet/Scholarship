@@ -1,0 +1,20 @@
+{% extends "dashboard/base.html" %}
+{% block content %}
+<h1 class="text-2xl font-bold text-pine-900">{{ exam.name_bn }}</h1>
+<p class="text-sm text-slate-600">মোট নম্বর {{ exam.total_marks }} · ফলাফল অনুমোদন স্বয়ংক্রিয় নয়।</p>
+<form method="post" class="mt-4">{% csrf_token %}<input type="hidden" name="page" value="{{ page_obj.number }}">
+<div class="table-wrap"><table class="data-table"><thead><tr><th>আইডি</th><th>নাম</th><th>নম্বর</th><th>অবস্থান</th><th>মন্তব্য</th><th>অবস্থা</th></tr></thead>
+<tbody>{% for student in page_obj %}
+<tr>
+<td class="font-latin">{{ student.student_id }}<input type="hidden" name="student_ids" value="{{ student.pk }}"></td>
+<td>{{ student.name_bn }}</td>
+<td><input class="w-24 rounded border px-2 py-1" name="marks-{{ student.pk }}" value="{{ student.result_row.obtained_marks|default:'' }}"></td>
+<td><input class="w-20 rounded border px-2 py-1" name="position-{{ student.pk }}" value="{{ student.result_row.position|default:'' }}"></td>
+<td><input class="w-full rounded border px-2 py-1" name="remarks-{{ student.pk }}" value="{{ student.result_row.remarks|default:'' }}"></td>
+<td><select class="rounded border px-2 py-1" name="status-{{ student.pk }}">{% for value, label in statuses %}<option value="{{ value }}" {% if student.result_row and student.result_row.status == value %}selected{% endif %}>{{ label }}</option>{% endfor %}</select></td>
+</tr>
+{% endfor %}</tbody></table></div>
+<button class="btn-primary mt-4" type="submit">সংরক্ষণ</button>
+</form>
+{% include "dashboard/includes/pagination.html" %}
+{% endblock %}

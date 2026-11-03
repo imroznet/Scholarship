@@ -1,0 +1,16 @@
+{% extends "dashboard/base.html" %}
+{% block content %}
+<section class="card max-w-2xl">
+  <h1 class="text-2xl font-bold text-pine-900">সফলভাবে শিক্ষার্থী নিবন্ধন সম্পন্ন হয়েছে।</h1>
+  <dl class="mt-4 space-y-2 text-sm">
+    <div><dt class="font-semibold">শিক্ষার্থীর ইউনিক আইডি</dt><dd class="font-latin text-lg">{{ student.student_id }}</dd></div>
+    <div><dt class="font-semibold">শিক্ষার্থীর নাম</dt><dd>{{ student.name_bn }}</dd></div>
+    <div><dt class="font-semibold">প্রতিষ্ঠানের নাম</dt><dd>{{ student.institute.name_bn }}</dd></div>
+    <div><dt class="font-semibold">শ্রেণি</dt><dd>{{ student.academic_class.name_bn }}</dd></div>
+  </dl>
+  <div class="mt-6 flex flex-wrap gap-3">
+    <a class="btn-primary" href="{% url 'students:print' student.pk %}">প্রোফাইল প্রিন্ট</a>
+    <a class="btn-secondary" href="{% url 'students:create' %}">আরেকজন শিক্ষার্থী যোগ</a>
+  </div>
+</section>
+{% endblock %}

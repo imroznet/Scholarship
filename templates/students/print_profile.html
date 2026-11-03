@@ -1,0 +1,38 @@
+{% load static scholarship_tags %}
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="utf-8">
+  <title>{{ student.student_id }}</title>
+  <link rel="stylesheet" href="{% static 'css/fonts.css' %}">
+  <link rel="stylesheet" href="{% static 'css/app.css' %}">
+</head>
+<body class="bg-white p-8 font-sans text-slate-900">
+  <header class="flex items-center justify-between border-b border-pine-800 pb-4">
+    <div class="flex items-center gap-3">
+      {% if student.scholarship_session.branding.logo %}
+        <img src="{% url 'branding:asset' student.scholarship_session.pk 'logo' %}" alt="" class="h-16 w-16 object-contain">
+      {% endif %}
+      <div>
+        <h1 class="text-xl font-bold text-pine-900">{{ student.scholarship_session.branding.name_bn }}</h1>
+        <p class="text-sm">{{ student.scholarship_session.branding.sponsor_name_bn }}</p>
+      </div>
+    </div>
+    {% if student.photo %}<img src="{% url 'students:photo' student.pk %}" alt="" class="h-24 w-20 object-cover">{% endif %}
+  </header>
+  <h2 class="mt-6 text-lg font-semibold">শিক্ষার্থী প্রোফাইল</h2>
+  <dl class="mt-4 grid grid-cols-2 gap-3 text-sm">
+    <div><dt class="text-slate-500">আইডি</dt><dd class="font-latin">{{ student.student_id }}</dd></div>
+    <div><dt class="text-slate-500">নাম</dt><dd>{{ student.name_bn }} / {{ student.name_en }}</dd></div>
+    <div><dt class="text-slate-500">জন্ম তারিখ</dt><dd>{{ student.date_of_birth|bangla_date }}</dd></div>
+    <div><dt class="text-slate-500">মোবাইল</dt><dd class="font-latin">{{ student.mobile }}</dd></div>
+    <div><dt class="text-slate-500">পিতা</dt><dd>{{ student.father_name }} · {{ student.father_mobile }}</dd></div>
+    <div><dt class="text-slate-500">মাতা</dt><dd>{{ student.mother_name }} · {{ student.mother_mobile }}</dd></div>
+    <div><dt class="text-slate-500">ঠিকানা</dt><dd>{{ student.village }}, {{ student.post_office }}, {{ student.upazila }}, {{ student.district }}</dd></div>
+    <div><dt class="text-slate-500">প্রতিষ্ঠান</dt><dd>{{ student.institute.name_bn }}</dd></div>
+    <div><dt class="text-slate-500">বিভাগ</dt><dd>{{ student.category_name_bn }}</dd></div>
+    <div><dt class="text-slate-500">শ্রেণি</dt><dd>{{ student.academic_class.name_bn }}</dd></div>
+  </dl>
+  <p class="no-print mt-6"><button class="btn-primary" type="button" onclick="window.print()">প্রিন্ট</button></p>
+</body>
+</html>

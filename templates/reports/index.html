@@ -1,0 +1,14 @@
+{% extends "dashboard/base.html" %}
+{% block content %}
+<h1 class="text-2xl font-bold text-pine-900">রিপোর্ট ও এক্সপোর্ট</h1>
+<p class="mt-2 text-sm text-slate-600">এক্সপোর্ট বর্তমান ফিল্টার অনুসরণ করে। অপারেটর সংবেদনশীল ঘর পাবেন না।</p>
+<div class="mt-6 flex flex-wrap gap-3">
+  <a class="btn-primary" href="{% url 'reports:students_xlsx' %}?{{ request.GET.urlencode }}">শিক্ষার্থী এক্সেল</a>
+  <a class="btn-secondary" href="{% url 'reports:students_csv' %}?{{ request.GET.urlencode }}">শিক্ষার্থী সিএসভি</a>
+  <a class="btn-secondary" href="{% url 'reports:print_students' %}?{{ request.GET.urlencode }}">তালিকা প্রিন্ট</a>
+  {% if request.user.is_super_admin %}
+    <a class="btn-secondary" href="{% url 'reports:winners_xlsx' %}">বিজয়ী এক্সেল</a>
+    <a class="btn-secondary" href="{% url 'reports:winners_csv' %}">বিজয়ী সিএসভি</a>
+  {% endif %}
+</div>
+{% endblock %}

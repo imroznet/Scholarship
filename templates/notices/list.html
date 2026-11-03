@@ -1,0 +1,8 @@
+{% extends "dashboard/base.html" %}
+{% block content %}
+<div class="flex items-center justify-between"><h1 class="text-2xl font-bold text-pine-900">নোটিশ</h1><a class="btn-primary" href="{% url 'notices:create' %}">নোটিশ যোগ</a></div>
+<div class="table-wrap mt-6"><table class="data-table"><thead><tr><th>শিরোনাম</th><th>অবস্থা</th><th></th></tr></thead>
+<tbody>{% for notice in notices %}<tr><td>{{ notice.title_bn }}</td><td>{{ notice.get_status_display }}</td><td class="space-x-2"><a class="underline" href="{% url 'notices:edit' notice.pk %}">সম্পাদনা</a>
+<form class="inline" method="post" action="{% url 'notices:archive' notice.pk %}">{% csrf_token %}{% if notice.status == 'DRAFT' %}<input type="hidden" name="hard" value="1">{% endif %}<button class="underline" type="submit">{% if notice.status == 'DRAFT' %}মুছুন{% else %}আর্কাইভ{% endif %}</button></form>
+</td></tr>{% empty %}<tr><td colspan="3">কোনো নোটিশ নেই।</td></tr>{% endfor %}</tbody></table></div>
+{% endblock %}

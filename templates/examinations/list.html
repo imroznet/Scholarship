@@ -1,0 +1,11 @@
+{% extends "dashboard/base.html" %}
+{% load scholarship_tags %}
+{% block content %}
+<div class="flex items-center justify-between"><h1 class="text-2xl font-bold text-pine-900">পরীক্ষা ব্যবস্থাপনা</h1><a class="btn-primary" href="{% url 'examinations:create' %}">পরীক্ষা যোগ</a></div>
+<div class="table-wrap mt-6"><table class="data-table"><thead><tr><th>নাম</th><th>শ্রেণি</th><th>তারিখ</th><th>অবস্থা</th><th></th></tr></thead>
+<tbody>{% for exam in exams %}<tr>
+<td>{{ exam.name_bn }}</td><td>{{ exam.academic_class.name_bn }}</td><td>{{ exam.exam_date|bangla_date }}</td><td>{{ exam.get_status_display }}</td>
+<td class="space-x-2"><a class="underline" href="{% url 'examinations:edit' exam.pk %}">সম্পাদনা</a><a class="underline" href="{% url 'results:entry' exam.pk %}">ফলাফল</a>
+<form class="inline" method="post" action="{% url 'examinations:publish' exam.pk %}">{% csrf_token %}<input type="hidden" name="publish" value="{% if exam.status == 'PUBLISHED' %}0{% else %}1{% endif %}"><button class="underline" type="submit">{% if exam.status == 'PUBLISHED' %}অপ্রকাশিত{% else %}প্রকাশ{% endif %}</button></form>
+</td></tr>{% empty %}<tr><td colspan="5">কোনো পরীক্ষা নেই।</td></tr>{% endfor %}</tbody></table></div>
+{% endblock %}

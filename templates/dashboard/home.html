@@ -1,0 +1,59 @@
+{% extends "dashboard/base.html" %}
+{% load scholarship_tags %}
+{% block content %}
+<h1 class="text-2xl font-bold text-pine-900">ড্যাশবোর্ড</h1>
+<p class="mt-1 text-sm text-slate-600">{% if active_session %}{{ active_session.name_bn }}{% else %}কোনো সক্রিয় সেশন নেই{% endif %}</p>
+<div class="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+  <article class="card"><p class="text-sm text-slate-600">মোট শিক্ষার্থী</p><p class="mt-2 text-3xl font-bold text-pine-900">{{ stats.total|bangla_digits }}</p></article>
+  <article class="card"><p class="text-sm text-slate-600">যাচাইকৃত শিক্ষার্থী</p><p class="mt-2 text-3xl font-bold text-pine-900">{{ stats.verified|bangla_digits }}</p></article>
+  <article class="card"><p class="text-sm text-slate-600">অপেক্ষমাণ শিক্ষার্থী</p><p class="mt-2 text-3xl font-bold text-pine-900">{{ stats.pending|bangla_digits }}</p></article>
+  <article class="card"><p class="text-sm text-slate-600">প্রকাশিত বিজয়ী</p><p class="mt-2 text-3xl font-bold text-pine-900">{{ stats.published_winners|bangla_digits }}</p></article>
+  <article class="card"><p class="text-sm text-slate-600">মোট প্রতিষ্ঠান</p><p class="mt-2 text-3xl font-bold text-pine-900">{{ stats.institutes|bangla_digits }}</p></article>
+</div>
+<div class="mt-6 grid gap-4 lg:grid-cols-2">
+  <section class="card">
+    <h2 class="font-semibold text-pine-900">বিভাগভিত্তিক শিক্ষার্থী</h2>
+    <ul class="mt-3 space-y-2 text-sm">
+      {% for row in stats.by_category %}
+        <li class="flex justify-between"><span>{{ row.category__name_bn }}</span><span>{{ row.total|bangla_digits }}</span></li>
+      {% empty %}<li>এখনো কোনো শিক্ষার্থী নেই।</li>{% endfor %}
+    </ul>
+  </section>
+  <section class="card">
+    <h2 class="font-semibold text-pine-900">শ্রেণিভিত্তিক শিক্ষার্থী</h2>
+    <ul class="mt-3 space-y-2 text-sm">
+      {% for row in stats.by_class %}
+        <li class="flex justify-between"><span>{{ row.academic_class__name_bn }}</span><span>{{ row.total|bangla_digits }}</span></li>
+      {% empty %}<li>এখনো কোনো শিক্ষার্থী নেই।</li>{% endfor %}
+    </ul>
+  </section>
+</div>
+<section class="card mt-6">
+  <h2 class="font-semibold text-pine-900">সাম্প্রতিক শিক্ষার্থী</h2>
+  <div class="table-wrap mt-3">
+    <table class="data-table">
+      <thead><tr><th>আইডি</th><th>নাম</th><th>প্রতিষ্ঠান</th><th>শ্রেণি</th></tr></thead>
+      <tbody>
+        {% for student in recent_students %}
+          <tr>
+            <td class="font-latin">{{ student.student_id }}</td>
+            <td><a class="underline" href="{% url 'students:detail' student.pk %}">{{ student.name_bn }}</a></td>
+            <td>{{ student.institute.name_bn }}</td>
+            <td>{{ student.academic_class.name_bn }}</td>
+          </tr>
+        {% empty %}<tr><td colspan="4">কোনো শিক্ষার্থী নেই।</td></tr>{% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% if request.user.is_super_admin %}
+<section class="card mt-6">
+  <h2 class="font-semibold text-pine-900">সাম্প্রতিক কার্যক্রম</h2>
+  <ul class="mt-3 space-y-2 text-sm">
+    {% for log in recent_logs %}
+      <li>{{ log.created_at|bangla_date }} · {{ log.action }} · {{ log.target_repr }}</li>
+    {% empty %}<li>কোনো লগ নেই।</li>{% endfor %}
+  </ul>
+</section>
+{% endif %}
+{% endblock %}

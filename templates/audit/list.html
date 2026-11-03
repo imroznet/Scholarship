@@ -1,0 +1,9 @@
+{% extends "dashboard/base.html" %}
+{% load scholarship_tags %}
+{% block content %}
+<h1 class="text-2xl font-bold text-pine-900">কার্যক্রম লগ</h1>
+<form method="get" class="mt-4"><input class="rounded border px-3 py-2 text-sm" name="action" value="{{ action }}" placeholder="অ্যাকশন"></form>
+<div class="table-wrap mt-4"><table class="data-table"><thead><tr><th>সময়</th><th>ব্যবহারকারী</th><th>অ্যাকশন</th><th>বিষয়</th></tr></thead>
+<tbody>{% for log in logs %}<tr><td>{{ log.created_at|bangla_date }}</td><td>{{ log.user|default:"—" }}</td><td class="font-latin">{{ log.action }}</td><td>{{ log.target_repr }}</td></tr>{% endfor %}</tbody></table></div>
+{% include "dashboard/includes/pagination.html" %}
+{% endblock %}

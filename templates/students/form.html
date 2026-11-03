@@ -1,0 +1,54 @@
+{% extends "dashboard/base.html" %}
+{% load static %}
+{% block content %}
+<h1 class="text-2xl font-bold text-pine-900">{{ page_title }}</h1>
+{% if not active_session %}
+  <p class="mt-4 text-red-700">কোনো সক্রিয় স্কলারশিপ সেশন নেই। নিবন্ধন করা যাবে না।</p>
+{% else %}
+  <p class="mt-2 text-sm text-slate-600">সেশন: {{ active_session.name_bn }}</p>
+  {% if warnings %}
+    <div class="mt-4 rounded-md border border-amber-300 bg-amber-50 p-4 text-sm">
+      <p class="font-semibold">সম্ভাব্য মিল পাওয়া গেছে। সংরক্ষণ বাতিল করা হয়নি।</p>
+      <ul class="mt-2 list-disc pl-5">{% for warning in warnings %}<li>{{ warning }}</li>{% endfor %}</ul>
+    </div>
+  {% endif %}
+  <form method="post" enctype="multipart/form-data" class="card mt-4 max-w-3xl space-y-4" x-data="{ preview: '' }">
+    {% csrf_token %}
+    {% for error in form.non_field_errors %}<p class="text-sm text-red-700">{{ error }}</p>{% endfor %}
+    {% for field in form %}
+      {% if field.name == "institute" %}
+        <div>
+          <label class="mb-1 block text-sm font-medium" for="institute-search">প্রতিষ্ঠান খুঁজুন</label>
+          <input id="institute-search" class="mb-2 w-full rounded-md border border-slate-300 px-3 py-2 text-sm" type="search" placeholder="নাম বা কোড">
+          <select name="institute" id="id_institute" class="w-full rounded-md border border-slate-300 px-3 py-2 text-sm" required>
+            <option value="">নির্বাচন করুন</option>
+            {% for institute in institutes %}
+              <option value="{{ institute.pk }}" data-name="{{ institute.name_bn }} {{ institute.institute_code }}" data-category="{{ institute.category.name_bn }}" {% if field.value|stringformat:"s" == institute.pk|stringformat:"s" %}selected{% endif %}>
+                {{ institute.name_bn }} ({{ institute.institute_code }})
+              </option>
+            {% endfor %}
+          </select>
+          <p class="mt-2 text-sm">বিভাগ: <span id="category-preview">প্রতিষ্ঠান নির্বাচন করুন</span></p>
+          {% for error in field.errors %}<p class="mt-1 text-sm text-red-700">{{ error }}</p>{% endfor %}
+        </div>
+      {% elif field.name == "photo" %}
+        <div>
+          <label class="mb-1 block text-sm font-medium" for="{{ field.id_for_label }}">ছবি</label>
+          <input id="{{ field.id_for_label }}" type="file" name="photo" accept="image/png,image/jpeg,image/webp" class="block w-full text-sm" @change="preview = $event.target.files[0] ? URL.createObjectURL($event.target.files[0]) : ''">
+          <img x-show="preview" :src="preview" alt="" class="mt-2 h-24 w-20 rounded object-cover">
+          {% if photo_saved %}<p class="mt-1 text-xs text-slate-600">আগের আপলোড করা ছবি রাখা আছে।</p>{% endif %}
+          {% if is_edit and student.photo %}<img src="{% url 'students:photo' student.pk %}" alt="" class="mt-2 h-24 w-20 rounded object-cover">{% endif %}
+          {% for error in field.errors %}<p class="mt-1 text-sm text-red-700">{{ error }}</p>{% endfor %}
+        </div>
+      {% else %}
+        {% include "dashboard/includes/field.html" with field=field %}
+      {% endif %}
+    {% endfor %}
+    {% if warnings %}
+      <label class="flex items-center gap-2 text-sm"><input type="checkbox" name="confirm_duplicates" value="1"> মিল থাকা সত্ত্বেও সংরক্ষণ করুন</label>
+    {% endif %}
+    <button class="btn-primary" type="submit">সংরক্ষণ</button>
+  </form>
+{% endif %}
+{% endblock %}
+{% block scripts %}<script src="{% static 'js/student-form.js' %}"></script>{% endblock %}

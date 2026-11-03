@@ -1,0 +1,23 @@
+{% load static scholarship_tags %}
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}{% if branding %}{{ branding.name_bn }}{% else %}স্কলারশিপ{% endif %}{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'css/fonts.css' %}">
+  <link rel="stylesheet" href="{% static 'css/app.css' %}">
+  {% if branding and branding.favicon %}
+    <link rel="icon" href="{% url 'public:brand_asset' 'favicon' %}">
+  {% else %}
+    <link rel="icon" href="{% static 'images/favicon-default.png' %}">
+  {% endif %}
+</head>
+<body class="min-h-screen bg-white font-sans text-slate-900">
+  <a class="sr-only focus:not-sr-only focus:absolute focus:left-3 focus:top-3 focus:z-50 focus:bg-white focus:px-3 focus:py-2" href="#content">মূল বিষয়বস্তু</a>
+  {% include "public/includes/header.html" %}
+  <main id="content">{% block content %}{% endblock %}</main>
+  {% include "public/includes/footer.html" %}
+  <script src="{% static 'js/countdown.js' %}"></script>
+</body>
+</html>

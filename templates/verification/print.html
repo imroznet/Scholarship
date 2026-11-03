@@ -1,0 +1,7 @@
+{% load static %}
+<!DOCTYPE html><html lang="bn"><head><meta charset="utf-8"><title>যাচাই তালিকা</title>
+<link rel="stylesheet" href="{% static 'css/fonts.css' %}"><link rel="stylesheet" href="{% static 'css/app.css' %}"></head>
+<body class="p-6"><h1 class="text-xl font-bold">{{ branding.name_bn }} — যাচাই তালিকা</h1>
+<table class="data-table mt-4"><thead><tr><th>আইডি</th><th>নাম</th><th>প্রতিষ্ঠান</th><th>শ্রেণি</th><th>অবস্থা</th></tr></thead>
+<tbody>{% for student in students %}<tr><td>{{ student.student_id }}</td><td>{{ student.name_bn }}</td><td>{{ student.institute.name_bn }}</td><td>{{ student.academic_class.name_bn }}</td><td>{{ student.get_verification_status_display }}</td></tr>{% endfor %}</tbody></table>
+<button class="no-print btn-primary mt-4" onclick="window.print()">প্রিন্ট</button></body></html>

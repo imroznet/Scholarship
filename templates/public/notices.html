@@ -1,0 +1,18 @@
+{% extends "public/base.html" %}
+{% load scholarship_tags %}
+{% block title %}নোটিশ{% endblock %}
+{% block content %}
+<section class="mx-auto max-w-3xl px-4 py-10">
+  <h1 class="text-3xl font-bold text-pine-900">নোটিশ</h1>
+  <div class="mt-6 space-y-3">
+    {% for notice in notices %}
+      <a class="card block" href="{% url 'public:notice_detail' notice.slug %}">
+        <p class="font-semibold">{% if notice.is_featured %}গুরুত্বপূর্ণ · {% endif %}{{ notice.title_bn }}</p>
+        <p class="mt-1 text-sm text-slate-600">{{ notice.published_at|bangla_date }}</p>
+      </a>
+    {% empty %}
+      <p>কোনো প্রকাশিত নোটিশ নেই।</p>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

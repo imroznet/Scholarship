@@ -1,10 +1,15 @@
-<article class="card">
+{% load scholarship_tags %}
+<article class="card flex h-full flex-col {% if winner.position == 1 %}border-gold-500 bg-gold-50/40 ring-1 ring-gold-500/50{% elif winner.position == 2 or winner.position == 3 %}border-gold-100{% endif %}">
   {% if winner.student.photo %}
-    <img src="{% url 'public:winner_photo' winner.pk %}" alt="" class="mb-3 h-28 w-24 rounded object-cover">
+    <img src="{% url 'public:winner_photo' winner.pk %}" alt="{{ winner.student.name_bn }}" width="160" height="192" loading="lazy" class="mb-4 h-48 w-40 rounded-xl object-cover">
   {% endif %}
-  <h3 class="font-semibold text-pine-900">{{ winner.student.name_bn }}</h3>
-  <p class="font-latin text-sm text-slate-600">{{ winner.student.student_id }}</p>
-  <p class="mt-2 text-sm">{{ winner.student.institute.name_bn }}</p>
-  <p class="text-sm">{{ winner.student.academic_class.name_bn }} · {{ winner.student.category_name_bn }}</p>
-  <p class="mt-2 text-sm font-semibold text-pine-800">{{ winner.award_type.name_bn }}{% if winner.position %} · অবস্থান {{ winner.position }}{% endif %}</p>
+  {% if winner.position %}
+    <p class="text-sm font-semibold text-gold-700">অবস্থান {{ winner.position|bangla_digits }}</p>
+  {% endif %}
+  <h3 class="text-xl font-bold text-pine-900">{{ winner.student.name_bn }}</h3>
+  <p class="font-latin text-[15px] text-slate-700">{{ winner.student.student_id }}</p>
+  <p class="mt-3 text-base">{{ winner.student.institute.name_bn }}</p>
+  <p class="text-[15px] text-slate-700">{{ winner.student.academic_class.name_bn }}</p>
+  <p class="text-[15px] text-slate-700">বিভাগ: {{ winner.student.category_name_bn }}</p>
+  <p class="mt-auto pt-3 text-base font-semibold text-pine-800">{{ winner.award_type.name_bn }}</p>
 </article>

@@ -14,10 +14,12 @@
   {% endif %}
 </head>
 <body class="min-h-screen bg-white font-sans text-slate-900">
-  <a class="sr-only focus:not-sr-only focus:absolute focus:left-3 focus:top-3 focus:z-50 focus:bg-white focus:px-3 focus:py-2" href="#content">মূল বিষয়বস্তু</a>
+  <a class="sr-only focus:not-sr-only focus:absolute focus:left-3 focus:top-3 focus:z-50 focus:rounded-lg focus:bg-white focus:px-3 focus:py-2" href="#content">মূল বিষয়বস্তু</a>
   {% include "public/includes/header.html" %}
   <main id="content">{% block content %}{% endblock %}</main>
   {% include "public/includes/footer.html" %}
+  <script src="{% static 'js/alpine.min.js' %}" defer></script>
   <script src="{% static 'js/countdown.js' %}"></script>
+  {% block scripts %}{% endblock %}
 </body>
 </html>

@@ -1,0 +1,5 @@
+{% load scholarship_tags %}
+<div class="rounded-2xl border border-pine-100 bg-white px-3 py-4 text-center shadow-sm">
+  <p class="countdown-digit font-latin text-[2rem] font-bold leading-none text-pine-900 sm:text-5xl" data-countdown-part="{{ part }}">{{ value|bangla_pad }}</p>
+  <p class="mt-2 text-base font-semibold text-pine-800">{{ label }}</p>
+</div>

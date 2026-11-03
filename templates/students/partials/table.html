@@ -1,5 +1,22 @@
 <div id="student-table">
-  <div class="table-wrap">
+  <div class="space-y-3 md:hidden">
+    {% for student in students %}
+      <article class="card">
+        <h2 class="text-xl font-bold text-pine-900">{{ student.name_bn }}</h2>
+        <p class="font-latin text-[15px] text-slate-700">{{ student.student_id }}</p>
+        <p class="mt-2 text-base">{{ student.institute.name_bn }}</p>
+        <p class="text-[15px]">{{ student.academic_class.name_bn }} · {{ student.category_name_bn }}</p>
+        <p class="mt-2 text-[15px]"><span class="rounded-full bg-pine-50 px-2 py-1 text-pine-900">{{ student.get_verification_status_display }}</span></p>
+        <div class="no-print mt-3 flex flex-wrap gap-3">
+          <a class="btn-secondary" href="{% url 'students:detail' student.pk %}">বিস্তারিত</a>
+          <a class="btn-secondary" href="{% url 'students:print' student.pk %}">প্রিন্ট</a>
+        </div>
+      </article>
+    {% empty %}
+      <p class="card">কোনো শিক্ষার্থী পাওয়া যায়নি।</p>
+    {% endfor %}
+  </div>
+  <div class="table-wrap hidden md:block">
     <table class="data-table">
       <thead>
         <tr>

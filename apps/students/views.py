@@ -212,6 +212,7 @@ class StudentUpdateView(StaffRequiredMixin, View):
             institutes=self._institutes(student),
             classes=self._classes(request, student),
             include_active=request.user.is_super_admin,
+            existing_student=student,
         )
         return render(request, self.template_name, self._context(request, student, form))
 
@@ -222,6 +223,7 @@ class StudentUpdateView(StaffRequiredMixin, View):
             institutes=self._institutes(student),
             classes=self._classes(request, student),
             include_active=request.user.is_super_admin,
+            existing_student=student,
         )
         photo_key = f"edit-photo-{student.pk}"
         photo_error = None

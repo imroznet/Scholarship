@@ -128,3 +128,43 @@ class Winner(TimeStampedModel):
             raise ValidationError({"result_reference": "ফলাফল এই শিক্ষার্থীর নয়।"})
         if self.award_type_id and not self.award_type.is_active:
             raise ValidationError({"award_type": "নিষ্ক্রিয় পুরস্কার নির্বাচন করা যাবে না।"})
+
+
+class WinnerAnnouncement(TimeStampedModel):
+    """Featured public announcement for one scholarship session.
+
+    One row per session keeps past sessions intact. Only one of those rows
+    can be featured at a time for that session.
+    """
+
+    scholarship_session = models.OneToOneField(
+        "scholarship_sessions.ScholarshipSession",
+        on_delete=models.PROTECT,
+        related_name="winner_announcement",
+    )
+    title_bn = models.CharField(max_length=255, blank=True)
+    description_bn = models.TextField(blank=True)
+    published_at = models.DateTimeField(null=True, blank=True)
+    is_published = models.BooleanField(default=False)
+    is_featured = models.BooleanField(default=False)
+    archived_at = models.DateTimeField(null=True, blank=True)
+    publication_version = models.PositiveIntegerField(default=1)
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="created_winner_announcements",
+    )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["scholarship_session"],
+                condition=Q(is_featured=True),
+                name="one_featured_announcement_per_session",
+            )
+        ]
+
+    def __str__(self):
+        return self.title_bn or f"বিজয়ী ঘোষণা · {self.scholarship_session}"

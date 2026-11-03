@@ -1,6 +1,6 @@
 <div>
   {% if field.field.widget.input_type != "checkbox" %}
-    <label class="mb-1 block text-sm font-medium text-slate-800" for="{{ field.id_for_label }}">{{ field.label }}</label>
+    <label class="mb-1 block text-base font-medium text-slate-800" for="{{ field.id_for_label }}">{{ field.label }}</label>
   {% endif %}
   <div class="{% if field.field.widget.input_type == 'checkbox' %}flex items-center gap-2{% endif %}">
     {{ field }}

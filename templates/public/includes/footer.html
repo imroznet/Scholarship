@@ -1,17 +1,22 @@
 <footer class="mt-16 bg-pine-900 text-pine-50">
-  <div class="mx-auto grid max-w-6xl gap-6 px-4 py-10 md:grid-cols-3">
+  <div class="mx-auto grid max-w-6xl gap-8 px-4 py-12 md:grid-cols-3">
     <div>
-      <p class="text-lg font-semibold text-white">{{ branding.name_bn|default:"স্কলারশিপ" }}</p>
-      {% if branding and branding.sponsor_name_bn %}<p class="mt-2 text-sm">স্পনসর: {{ branding.sponsor_name_bn }}</p>{% endif %}
+      <p class="text-xl font-bold text-white">{{ branding.name_bn|default:"স্কলারশিপ" }}</p>
+      {% if branding and branding.sponsor_name_bn %}<p class="mt-2 text-base">স্পনসর: {{ branding.sponsor_name_bn }}</p>{% endif %}
+      {% if branding and branding.slogan_bn %}<p class="mt-2 text-[15px] text-pine-100">{{ branding.slogan_bn }}</p>{% endif %}
     </div>
-    <div class="text-sm leading-6">
+    <div class="text-base leading-8">
       {% if branding and branding.address %}<p>{{ branding.address|linebreaksbr }}</p>{% endif %}
       {% if branding and branding.phone %}<p>ফোন: <a class="underline" href="tel:{{ branding.phone }}">{{ branding.phone }}</a></p>{% endif %}
       {% if branding and branding.email %}<p>ইমেইল: <a class="underline" href="mailto:{{ branding.email }}">{{ branding.email }}</a></p>{% endif %}
     </div>
-    <div class="text-sm">
+    <div class="text-base leading-8">
+      <p class="font-semibold text-white">দ্রুত লিঙ্ক</p>
+      <a class="mt-2 block underline" href="{% url 'public:schedule' %}">সময়সূচি</a>
+      <a class="block underline" href="{% url 'public:announcement' %}">বিজয়ী ঘোষণা</a>
+      <a class="block underline" href="{% url 'public:contact' %}">যোগাযোগ</a>
       {% if branding and branding.sponsor_website %}
-        <a class="underline" href="{{ branding.sponsor_website }}" rel="noopener noreferrer">স্পনসরের ওয়েবসাইট</a>
+        <a class="mt-2 inline-block underline" href="{{ branding.sponsor_website }}" rel="noopener noreferrer">স্পনসরের ওয়েবসাইট</a>
       {% endif %}
     </div>
   </div>
